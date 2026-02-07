@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-6xl mx-auto px-4 py-10">
+
+  <!-- Page Header -->
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-[#005953]">
+      My Orders
+    </h2>
+    <p class="text-gray-500 mt-1">
+      View your order history and invoices
+    </p>
+  </div>
+
+  {% if orders %}
+    <div class="space-y-5">
+
+      {% for order in orders %}
+      <div
+        class="bg-white rounded-2xl border border-gray-100 shadow-sm
+               hover:shadow-md transition p-6">
+
+        <!-- Top Row -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+          <!-- Order Info -->
+          <div>
+            <p class="text-sm text-gray-500">Order ID</p>
+            <p class="text-lg font-semibold text-gray-800">
+              #{{ order.id }}
+            </p>
+            <p class="text-sm text-gray-400 mt-1">
+              {{ order.created_at|date:"d M Y, h:i A" }}
+            </p>
+          </div>
+
+          <!-- Status Badge -->
+          <span
+            class="inline-flex items-center px-4 py-1.5 rounded-full
+                   text-sm font-semibold
+            {% if order.status == 'delivered' %}
+              bg-green-100 text-green-700
+            {% elif order.status == 'cancelled' %}
+              bg-red-100 text-red-700
+            {% elif order.status == 'cancel_requested' %}
+              bg-yellow-100 text-yellow-700
+            {% else %}
+              bg-gray-100 text-gray-700
+            {% endif %}
+            ">
+            {{ order.status|capfirst }}
+          </span>
+        </div>
+
+        <!-- Divider -->
+        <div class="my-5 border-t"></div>
+
+        <!-- Bottom Row -->
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+          <!-- Total -->
+          <div>
+            <p class="text-sm text-gray-500">Total Amount</p>
+            <p class="text-2xl font-bold text-[#005953]">
+              ₹{{ order.total_amount }}
+            </p>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex flex-wrap gap-3">
+
+            <!-- Invoice -->
+            <a href="{% url 'order_invoice' order.id %}"
+               class="inline-flex items-center gap-2 px-5 py-2.5
+                      rounded-lg border border-[#005953]
+                      text-[#005953]
+                      hover:bg-[#005953] hover:text-white
+                      transition text-sm font-medium">
+              Invoice
+            </a>
+
+            <!-- Cancel -->
+            {% if order.status not in 'delivered cancelled' %}
+            <form method="POST"
+                  action="{% url 'cancel_order' order.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="reason" value="Customer cancelled">
+              <button
+                type="submit"
+                class="inline-flex items-center gap-2 px-5 py-2.5
+                       rounded-lg bg-red-500 text-white
+                       hover:bg-red-600 transition
+                       text-sm font-medium">
+                Cancel Order
+              </button>
+            </form>
+            {% endif %}
+
+          </div>
+        </div>
+
+      </div>
+      {% endfor %}
+
+    </div>
+
+  {% else %}
+    <!-- Empty State -->
+    <div class="bg-white rounded-2xl border border-gray-100
+                py-20 text-center">
+      <p class="text-gray-500 text-lg">
+        You haven’t placed any orders yet.
+      </p>
+    </div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

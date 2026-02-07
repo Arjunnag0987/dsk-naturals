@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}DSK Naturals{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- ✅ TAILWIND CDN (REQUIRED) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- ✅ DSK NATURALS BRAND COLOR -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dsk: '#005953'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gray-50 text-gray-800">
+
+  <!-- Header (optional) -->
+  <header class="bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-dsk">DSK Naturals</h1>
+
+    <nav class="space-x-4">
+      <a href="/" class="text-gray-700 hover:text-dsk">Home</a>
+
+      {% if user.is_authenticated %}
+        <a href="/api/profile/" class="text-gray-700 hover:text-dsk">My Profile</a>
+        <a href="{% url 'logout' %}" class="text-red-600 hover:underline">Logout</a>
+      {% else %}
+        <a href="{% url 'login' %}" class="text-gray-700 hover:text-dsk">Login</a>
+        <a href="{% url 'register' %}" class="text-gray-700 hover:text-dsk">Register</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+
+  <!-- Page Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <script>
+async function cancelOrder(orderId) {
+  const reason = prompt("Please enter cancellation reason:");
+
+  if (!reason || !reason.trim()) {
+    alert("Cancellation reason is required");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/order/${orderId}/cancel/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify({ reason }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Cancellation failed");
+      return;
+    }
+
+    alert("Cancellation request sent successfully ✅");
+    location.reload();
+
+  } catch (err) {
+    console.error(err);
+    alert("Something went wrong");
+  }
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie) {
+    document.cookie.split(";").forEach(c => {
+      c = c.trim();
+      if (c.startsWith(name + "=")) {
+        cookieValue = decodeURIComponent(c.substring(name.length + 1));
+      }
+    });
+  }
+  return cookieValue;
+}
+</script>
+
+
+</body>
+</html>

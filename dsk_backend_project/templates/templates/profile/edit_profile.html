@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="max-w-xl mx-auto mt-10 bg-white p-6 rounded-xl shadow">
+
+  <h2 class="text-xl font-semibold mb-4">Edit Profile</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- NAME -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Name</label>
+      <input
+        type="text"
+        name="name"
+        value="{{ request.user.username }}"
+        class="w-full border rounded px-3 py-2"
+        required
+      >
+    </div>
+
+    <!-- PHONE -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Phone Number</label>
+      <input
+        type="text"
+        name="phone"
+        value="{{ profile.phone }}"
+        class="w-full border rounded px-3 py-2"
+        required
+      >
+    </div>
+
+    <!-- IMAGE -->
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Profile Image</label>
+      <input
+        type="file"
+        name="profile_image"
+        class="w-full"
+      >
+    </div>
+
+    <button
+      type="submit"
+      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+    >
+      Save Changes
+    </button>
+
+  </form>
+
+</div>
+
+{% endblock %}

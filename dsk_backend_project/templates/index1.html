@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DSK Naturals — Shop</title>
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+/>
+
+  <style>
+    :root{--dsk-green:#005953;--dsk-dark-green:#004742;--dsk-accent:#007067}
+    html,body{font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;}
+    body{background-color:#f8fafc}
+
+    .logo-img{transition:transform .2s ease, box-shadow .2s ease; cursor:pointer}
+    .logo-img.enlarged{transform:scale(1.9);box-shadow:0 10px 35px rgba(0,0,0,0.15);z-index:60}
+
+    .modal-backdrop{background:rgba(0,0,0,0.55)}
+    .dot{width:9px;height:9px;border-radius:999px;display:inline-block;margin:0 4px}
+    .dot.active{background:#fff}
+    .dot.inactive{background:rgba(255,255,255,0.45)}
+
+    @media(min-width:1024px){ .product-card-img{height:96px} }
+
+    /* Prominent cart button */
+    .cart-btn{ width:52px; height:52px; padding:0; display:inline-flex; align-items:center; justify-content:center; border-radius:9999px; box-shadow:0 6px 18px rgba(0,0,0,0.12); position: relative; } /* position added */
+    /* bubble style */
+    .cart-count{
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef4444; /* red */
+      color: #fff;
+      min-width: 20px;
+      height: 20px;
+      line-height: 20px;
+      padding: 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .cart-count.hidden { display: none !important; } /* keep using the hidden class toggle in your JS */
+
+    /* compact form tweaks for modal */
+    .checkout-input { padding: 8px 10px; font-size: 13px; }
+    .checkout-textarea { padding: 8px 10px; font-size: 13px; }
+    .modal-buttons-row { gap: 10px; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header id="app-header" class="fixed top-0 left-0 right-0 bg-white shadow z-40">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <img id="site-logo" src="https://res.cloudinary.com/drmgywvk0/image/upload/v1762253211/logodsk_sxqwud.png" alt="DSK" class="h-12 w-12 object-contain logo-img"/>
+        <div class="hidden md:block">
+          <h1 class="text-xl font-bold text-[var(--dsk-green)]">DSK Naturals</h1>
+          <p class="text-xs text-gray-500">Where purity meets flavour</p>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex space-x-6 text-[var(--dsk-green)] font-medium">
+        <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})">Home</a>
+        <a href="#products" onclick="navigateTo('products')">Products</a>
+        <a href="#contact" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">Contact</a>
+        <a href="/api/login/">Login</a>
+        <a href="/api/register/">Register</a>
+      </nav>
+
+      <div class="flex items-center space-x-4">
+        <div class="hidden lg:block w-72 relative">
+          <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400"></i>
+          <input id="global-search" type="text" placeholder="Search products..." class="pl-10 pr-4 py-2 w-full border rounded-xl" />
+        </div>
+
+        <button id="cart-toggle" class="cart-btn bg-[var(--dsk-green)] text-white" aria-label="Open cart">
+          <i data-lucide="shopping-cart" class="h-6 w-6"></i>
+          <!-- initially hidden; will appear when items > 0 -->
+          <span id="cart-count" class="cart-count hidden">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main content -->
+  <main id="main-content-wrapper" class="pt-24 container mx-auto px-4">
+
+    <!-- Hero / Carousel -->
+    <section id="hero" class="w-full mb-8">
+      <div class="rounded-2xl overflow-hidden relative h-48 sm:h-60 md:h-64 lg:h-72 shadow-lg">
+        <div id="carousel-track" class="flex w-full h-full transition-transform duration-500"></div>
+        <div id="banner-dots" class="absolute bottom-4 left-0 right-0 flex justify-center space-x-2"></div>
+        <button id="carousel-prev" class="absolute left-3 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white shadow hidden lg:block"><i data-lucide="chevron-left" class="h-5 w-5"></i></button>
+        <button id="carousel-next" class="absolute right-3 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white shadow hidden lg:block"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>
+      </div>
+    </section>
+
+    <!-- Category Tabs -->
+    <div id="category-tabs" class="flex flex-wrap gap-2 mb-6"></div>
+
+    <!-- Products Grid -->
+    <section id="product-grid-container" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" data-section="products"></section>
+
+  </main>
+
+  <!-- Cart Drawer -->
+  <div id="cart-drawer" class="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300"></div>
+  <div id="cart-drawer-overlay" class="hidden fixed inset-0 z-40 modal-backdrop"></div>
+
+  <!-- Product Modal -->
+  <div id="product-modal-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center modal-backdrop"></div>
+
+  <script>
+    let lastOrderId = null;
+    let backendProducts = {}; // { productId: {id, stock, name} }
+    lucide.createIcons();
+
+    /* ------------------ DATA ------------------ */
+     baseProducts = [
+      { baseId: 1, category: 'Spices & Masalas', name: 'Turmeric Powder',
+      description: `
+        Pure, natural turmeric powder made from carefully selected turmeric roots.
+        Rich in curcumin, it enhances flavour, colour, and health benefits.
+        No additives, no preservatives, and no artificial colour.
+      `,
+      images:[
+          'https://placehold.co/400x300/FFCC00/000?text=Turmeric+1',
+          'https://placehold.co/400x300/FFD966/000?text=Turmeric+2',
+          'https://placehold.co/400x300/FFD966/000?text=Turmeric+3'
+        ], variants:[{id:'1-250g',size:'250g',price:125},{id:'1-500g',size:'500g',price:250}]},
+      { baseId: 2, category: 'Spices & Masalas', name: 'Red Chilli Powder',
+      description: `
+        Pure, natural red chilli powder made from carefully selected red chillies.
+        Adds heat and vibrant colour to dishes.
+        No additives, no preservatives, and no artificial colour.
+      `,  
+      images:[
+          'https://placehold.co/400x300/FF5733/fff?text=Red+Chilli',
+          'https://placehold.co/400x300/FF6F61/fff?text=Red+Chilli+2'
+        ], variants:[{id:'2-100g',size:'250g',price:200},{id:'2-250g',size:'500g',price:400}]},
+      { baseId: 3, category: 'Spices & Masalas', name: 'Coriander Powder', images:[
+          'https://placehold.co/400x300/9ACD32/000?text=Coriander',
+          'https://placehold.co/400x300/7BBF3E/000?text=Coriander+2'
+        ], variants:[{id:'3-100g',size:'200g',price:125},{id:'3-250g',size:'500g',price:250}]},
+      { baseId: 4, category: 'Whole Spices', name: 'Black Pepper', images:[
+          'https://placehold.co/400x300/222/fff?text=Black+Pepper'
+        ], variants:[{id:'4-100g',size:'100g',price:160},{id:'4-200g',size:'200g',price:300}]},
+      { baseId: 5, category: 'Whole Spices', name: 'Cumin Seeds (Jeera Powder)', images:[
+          'https://placehold.co/400x300/C9A66B/000?text=Jeera powder+1',
+          'https://placehold.co/400x300/C9A66B/000?text=Jeera powder+2'
+        ], variants:[{id:'5-100g',size:'250g',price:175},{id:'5-250g',size:'500g',price:350}]},
+      { baseId: 6, category: 'Blended Masalas', name: 'Sambar Powder', images:[
+          'https://placehold.co/400x300/FF8C69/000?text=Sambar',
+          'https://placehold.co/400x300/FF8C69/000?text=Sambar'
+        ], variants:[{id:'6-100g',size:'100g',price:125},{id:'6-250g',size:'250g',price:250}]},
+      { baseId: 7, category: 'Blended Masalas', name: 'Rasam Powder', images:[
+          'https://placehold.co/400x300/FFA07A/000?text=Rasam',
+          'https://placehold.co/400x300/FFA07A/000?text=Rasam'
+        ], variants:[{id:'7-100g',size:'100g',price:125},{id:'7-250g',size:'250g',price:250}]},
+      { baseId: 8, category: 'Blended Masalas', name: 'Garam Masala', images:[
+          'https://placehold.co/400x300/D2B48C/000?text=Garam+Masala',
+          'https://placehold.co/400x300/D2B48C/000?text=Garam+Masala'
+        ], variants:[{id:'8-50g',size:'100g',price:125},{id:'8-100g',size:'250g',price:250}]},
+      { baseId: 9, category: 'Whole Spices', name: 'Cardamom (Elaichi)', images:[
+          'https://placehold.co/400x300/8FBC8F/000?text=Cardamom',
+          'https://placehold.co/400x300/8FBC8F/000?text=Cardamom'
+        ], variants:[{id:'9-50g',size:'100g',price:390}]},
+      { baseId: 10, category: 'Spices & Masalas', name: 'Cloves (Lavang)', images:[
+          'https://placehold.co/400x300/8B0000/fff?text=Cloves',
+          'https://placehold.co/400x300/8B0000/fff?text=Cloves'
+        ], variants:[{id:'10-25g',size:'100g',price:160}]},
+      { baseId: 11, category: 'Spices & Masalas', name: 'Cinnamon stick - srilanka (Dalchini)', images:[
+          'https://placehold.co/400x300/D2691E/fff?text=Cinnamon',
+          'https://placehold.co/400x300/D2691E/fff?text=Cinnamon'
+        ], variants:[{id:'11-25g',size:'100g',price:100},{id:'11-50g',size:'250g',price:200}]},
+      { baseId: 12, category: 'Whole Spices', name: 'Bay Leaves (Tej Patta)', images:[
+          'https://placehold.co/400x300/556B2F/fff?text=Bay+Leaves'
+        ], variants:[{id:'12-10g',size:'10g',price:20},{id:'12-25g',size:'25g',price:45}]},
+      { baseId: 13, category: 'Whole Spices', name: 'Mace (Javitri)', images:[
+          'https://placehold.co/400x300/FFA07A/000?text=Mace'
+        ], variants:[{id:'13-10g',size:'10g',price:260},{id:'13-25g',size:'25g',price:480}]},
+      { baseId: 14, category: 'Herbs & Natural', name: 'Curry Leaves (Dry)', images:[
+          'https://placehold.co/400x300/228B22/fff?text=Curry+Leaves'
+        ], variants:[{id:'14-20g',size:'20g',price:30},{id:'14-50g',size:'50g',price:70}]},
+      { baseId: 15, category: 'Herbs & Natural', name: 'Kashmiri Red Chillies', images:[
+          'https://placehold.co/400x300/FF4500/fff?text=Kashmiri+Chilli'
+        ], variants:[{id:'15-50g',size:'250g',price:250}]},
+      { baseId: 16, category: 'Blended Masalas', name: 'Biryani Masala', images:[
+          'https://placehold.co/400x300/DB7093/000?text=Biryani+Masala'
+        ], variants:[{id:'16-100g',size:'100g',price:125},{id:'16-250g',size:'250g',price:250}]},
+      { baseId: 17, category: 'Blended Masalas', name: 'Pav Bhaji Masala', images:[
+          'https://placehold.co/400x300/FFA500/000?text=Pav+Bhaji'
+        ], variants:[{id:'17-100g',size:'100g',price:125},{id:'17-250g',size:'250g',price:250}]},
+      { baseId: 18, category: 'Whole Spices', name: 'Szechuan Pepper', images:[
+          'https://placehold.co/400x300/CD5C5C/fff?text=Szechuan'
+        ], variants:[{id:'18-50g',size:'50g',price:220}]},
+      { baseId: 19, category: 'Spices & Masalas', name: 'White Sesame Seeds', images:[
+          'https://placehold.co/400x300/F5DEB3/000?text=White+Sesame'
+        ], variants:[{id:'19-100g',size:'100g',price:60},{id:'19-250g',size:'250g',price:140}]},
+      { baseId: 20, category: 'Spices & Masalas', name: 'Black Sesame Seeds', images:[
+          'https://placehold.co/400x300/000000/fff?text=Black+Sesame'
+        ], variants:[{id:'20-100g',size:'100g',price:70},{id:'20-250g',size:'250g',price:160}]},
+      
+    ];
+
+    const bannerImages = [
+  { src: 'https://res.cloudinary.com/drmgywvk0/image/upload/w_600,h_180,c_fill/v1763371130/Screenshot_2025-11-17_141737_ouiz0c.png', alt: 'Mega Masala Sale Banner' },
+  { src: 'https://res.cloudinary.com/drmgywvk0/image/upload/w_600,h_180,c_fill/v1763374017/back2_yvko4w.webp', alt: 'Authentic Masalas — Traditional Taste' },
+  { src: 'https://res.cloudinary.com/drmgywvk0/image/upload/w_600,h_180,c_fill/v1763375055/back_eagsas_sotbpy.jpg', alt: 'Premium Quality Ingredients for Your Kitchen' }
+];
+
+    // app state
+    let state = {
+      cartItems: [],
+      searchTerm: '',
+      selectedCategory: 'All',
+      currentBannerIndex: 0
+    };
+
+    /* ------------------ UTIL ------------------ */
+    function getProductVariantById(id){
+      for(const p of baseProducts){
+        const v = p.variants.find(x=>x.id===id);
+        if(v) return { ...v, baseId:p.baseId, name:p.name, category:p.category, images:p.images };
+      }
+      return null;
+    }
+
+    function showMessage(txt){
+      const el = document.createElement('div');
+      el.innerText = txt; el.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-[var(--dsk-green)] text-white px-4 py-2 rounded shadow z-60';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),2500);
+    }
+
+    // Small popup that appears near the cart icon when an item is added (fades out)
+    function showCartPopup() {
+      const cartBtn = document.getElementById('cart-toggle');
+      if (!cartBtn) return;
+
+      // calculate position
+      const rect = cartBtn.getBoundingClientRect();
+
+      const tip = document.createElement('div');
+      tip.innerText = 'Added ✓';
+      tip.style.position = 'fixed';
+      tip.style.left = (rect.left + rect.width / 2) + 'px';
+      tip.style.top = (rect.top - 10) + 'px';
+      tip.style.transform = 'translateX(-50%) translateY(0)';
+      tip.style.background = getComputedStyle(document.documentElement).getPropertyValue('--dsk-green') || '#005953';
+      tip.style.color = '#fff';
+      tip.style.padding = '6px 10px';
+      tip.style.borderRadius = '999px';
+      tip.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+      tip.style.zIndex = 9999;
+      tip.style.opacity = '1';
+      tip.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+
+      document.body.appendChild(tip);
+
+      // animate and remove after short duration
+      setTimeout(() => {
+        tip.style.opacity = '0';
+        tip.style.transform = 'translateX(-50%) translateY(-8px)';
+      }, 900);
+      setTimeout(() => tip.remove(), 1300);
+    }
+
+    /* ------------------ BANNER CAROUSEL ------------------ */
+    function renderCarousel(){
+  const track = document.getElementById('carousel-track');
+  const dots = document.getElementById('banner-dots');
+
+  // create slide items with images (object-cover so they fill & crop nicely)
+  track.innerHTML = bannerImages.map(b => `
+    <div class="flex-shrink-0 w-full h-full">
+      <img src="${b.src}" alt="${b.alt || ''}" loading="lazy"
+           class="w-full h-full object-cover object-center" />
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <!-- optional overlay text (comment out if not required) -->
+        <div class="text-white text-center p-6 pointer-events-none">
+          <!-- you can add headings here if you want text on top of the image -->
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+    async function loadBackendProducts() {
+      const res = await fetch("/api/products/");
+      const data = await res.json();
+
+      backendProducts = {};
+      data.forEach(p => {
+        backendProducts[p.id] = p;
+      });
+
+      console.log("BACKEND STOCK:", backendProducts);
+    } 
+  // dots (current index indicator)
+  dots.innerHTML = bannerImages.map((_,i)=>`
+   <button onclick="setBanner(${i})"
+            class="w-3 h-3 rounded-full transition-colors duration-300 ${i===state.currentBannerIndex ? 'bg-white' : 'bg-white/50 hover:bg-white/80'}"
+            aria-label="Go to banner ${i+1}"></button>
+   
+  `).join('');
+
+  // move to current index
+  track.style.transform = `translateX(-${state.currentBannerIndex * 100}%)`;
+}
+
+    function nextBanner(){ state.currentBannerIndex = (state.currentBannerIndex + 1) % bannerImages.length; renderCarousel(); }
+    function prevBanner(){ state.currentBannerIndex = (state.currentBannerIndex - 1 + bannerImages.length) % bannerImages.length; renderCarousel(); }
+    function setBanner(i){ state.currentBannerIndex = i; renderCarousel(); }
+
+    let bannerInterval = setInterval(nextBanner, 5000);
+
+    document.getElementById('carousel-prev').addEventListener('click', ()=>{ prevBanner(); clearInterval(bannerInterval); bannerInterval = setInterval(nextBanner,5000); });
+    document.getElementById('carousel-next').addEventListener('click', ()=>{ nextBanner(); clearInterval(bannerInterval); bannerInterval = setInterval(nextBanner,5000); });
+
+    /* ------------------ CATEGORIES ------------------ */
+    function renderCategoryTabs(){
+      const cats = ['All', ...new Set(baseProducts.map(p=>p.category))];
+      const container = document.getElementById('category-tabs');
+      container.innerHTML = cats.map(c=>`<button onclick="updateState({selectedCategory:'${c}'})" class="px-4 py-2 rounded-full text-sm font-medium transition duration-150 shadow-sm ${state.selectedCategory===c? 'bg-[var(--dsk-green)] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}">${c}</button>`).join('');
+    }
+
+    /* ------------------ PRODUCTS ------------------ */
+      function renderProducts(){
+        const grid = document.getElementById('product-grid-container');
+        if (!grid) return;
+
+        let items = [...baseProducts];
+
+        if(state.selectedCategory !== 'All'){
+        items = items.filter(p => p.category === state.selectedCategory);
+      }
+
+      if(state.searchTerm){
+        const q = state.searchTerm.toLowerCase();
+        items = items.filter(p =>
+          p.name.toLowerCase().includes(q)
+        );
+      }
+
+      if(items.length === 0){
+        grid.innerHTML = `<div class="col-span-full text-center p-6">
+          No products found
+        </div>`;
+        return;
+      }
+
+      grid.innerHTML = items.map(p => {
+        const backend = backendProducts[p.baseId];
+        const stock = backend? Number(backend.stock) : null;
+        const inStock = stock === null ? true : stock > 0;
+        const v = p.variants[0];
+
+        return `
+          <div class="bg-white p-3 rounded-xl shadow">
+            <div class="flex flex-col items-center
+              ${inStock ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'}"
+              ${inStock ? `onclick="openProductModal(${p.baseId})"` : ''}>
+
+              <img src="${p.images[0]}" class="w-28 h-28 object-cover mb-2"/>
+              <h4 class="text-sm font-semibold">${p.name}</h4>
+              <p class="text-xs text-gray-500 text-center line-clamp-2 mt-1">
+                ${p.description}
+              </p>
+            </div>
+
+            <div class="mt-3 flex justify-between items-center">
+              <span class="font-bold text-[var(--dsk-green)]">₹${v.price}</span>
+
+              ${
+                inStock
+                  ? `<button onclick="event.stopPropagation(); addToCart('${v.id}',1)"
+                      class="bg-[var(--dsk-green)] text-white px-3 py-1 rounded">
+                     Add
+                    </button>`
+                  : `<span class="text-red-600 font-semibold text-sm">
+                     Out of Stock
+                    </span>`
+                }
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* ------------------ CART ------------------ */
+    function addToCart(variantId, change){
+      const pv = getProductVariantById(variantId); if(!pv) return;
+      const idx = state.cartItems.findIndex(i=>i.id===variantId);
+      if(idx>-1){ state.cartItems[idx].quantity += change; 
+        if(state.cartItems[idx].quantity<=0) state.cartItems.splice(idx,1); }
+      else if(change>0)
+      { 
+        state.cartItems.push({ 
+          id:variantId,
+          product_id: pv.baseId,
+          name:pv.name,
+          size:pv.size,
+          price:pv.price,
+          quantity:1, 
+          img:pv.images[0] 
+        }); 
+          showMessage(`${pv.name} (${pv.size}) added to cart!`); showCartPopup(); }
+      renderCart();
+    }
+
+    function renderCart(){
+      const drawer = document.getElementById('cart-drawer');
+      const totalItems = state.cartItems.reduce((s,i)=>s+i.quantity,0);
+      const subtotal = state.cartItems.reduce((s,i)=>s+i.price*i.quantity,0);
+      const delivery = subtotal>0 && subtotal<1000?50:0;
+      const grand = subtotal+delivery;
+      const cartCountEl = document.getElementById('cart-count');
+      cartCountEl.innerText = totalItems;
+      if(totalItems>0) cartCountEl.classList.remove('hidden'); else cartCountEl.classList.add('hidden');
+
+      drawer.innerHTML = `
+        <div class="flex flex-col h-full"> 
+          <div class="p-4 border-b flex items-center justify-between"> 
+            <h3 class="text-lg font-bold">My Cart (${totalItems})</h3>
+            <button onclick="closeCart()" class="p-2 rounded-full hover:bg-gray-100"><i data-lucide="x" class="h-5 w-5"></i></button>
+          </div>
+          <div class="p-4 flex-grow overflow-y-auto space-y-3"> 
+            ${state.cartItems.length===0? '<div class="text-center text-gray-500">Cart is empty</div>' : state.cartItems.map(it=>`<div class="flex items-center justify-between p-2 bg-gray-50 rounded"><div class="flex items-center gap-3"><img src="${it.img}" class="w-12 h-12 object-contain rounded"/><div><div class="text-sm font-medium">${it.name} (${it.size})</div><div class="text-xs text-gray-500">₹${it.price} x ${it.quantity}</div></div></div><div class="flex items-center gap-2"><button onclick="addToCart('${it.id}',-1)" class="p-1 rounded bg-white">-</button><div>${it.quantity}</div><button onclick="addToCart('${it.id}',1)" class="p-1 rounded bg-white">+</button></div></div>`).join('')} 
+          </div>
+          <div class="p-4 border-t"> 
+            <div class="flex justify-between mb-2"><span>Subtotal</span><span>₹${subtotal.toFixed(2)}</span></div>
+            <div class="flex justify-between mb-2"><span>Delivery</span><span>${delivery>0? `+ ₹${delivery}`:'FREE'}</span></div>
+            <div class="flex justify-between font-bold text-lg mb-3"><span>Total</span><span>₹${grand.toFixed(2)}</span></div>
+            <div class="flex gap-2"> 
+              <button onclick="startCheckout()" class="flex-1 bg-[var(--dsk-green)] text-white py-2 rounded">Proceed to Checkout</button>
+              <button onclick="clearCart()" class="px-3 py-2 rounded border">Clear</button>
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+    }
+
+    function openCart(){ document.getElementById('cart-drawer').classList.remove('translate-x-full'); document.getElementById('cart-drawer-overlay').classList.remove('hidden'); }
+    function closeCart(){ document.getElementById('cart-drawer').classList.add('translate-x-full'); document.getElementById('cart-drawer-overlay').classList.add('hidden'); }
+    function clearCart(){ state.cartItems = []; renderCart(); }
+
+    document.getElementById('cart-toggle').addEventListener('click', ()=>{ renderCart(); openCart(); });
+    document.getElementById('cart-drawer-overlay').addEventListener('click', closeCart);
+
+    /* ------------------ PRODUCT MODAL (GALLERY) ------------------ */
+    let modalState = { currentProduct:null, currentIndex:0 };
+    function openProductModal(baseId){
+      const product = baseProducts.find(p=>p.baseId===baseId); 
+      if(!product) return;
+
+      modalState.currentProduct = product; modalState.currentIndex = 0;
+
+      const overlay = document.getElementById('product-modal-overlay');
+      overlay.innerHTML = `
+        <div class="bg-white rounded-2xl w-full max-w-3xl p-4 relative"> 
+          <button onclick="closeProductModal()" class="absolute top-3 right-3 p-2 rounded-full text-gray-600 hover:bg-gray-100"><i data-lucide="x" class="h-5 w-5"></i></button>
+          <div class="flex flex-col lg:flex-row gap-4"> 
+            <div class="w-full lg:w-1/2"> 
+              <div class="relative"> 
+                <img id="modal-main-img" src="${product.images[0]}" alt="product" class="w-full h-64 object-contain rounded" />
+                <button onclick="prevModalImage()" class="absolute left-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white shadow"><i data-lucide="chevron-left" class="h-5 w-5"></i></button>
+                <button onclick="nextModalImage()" class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 rounded-full bg-white shadow"><i data-lucide="chevron-right" class="h-5 w-5"></i></button>
+              </div>
+              <div id="modal-thumbs" class="flex gap-2 mt-3"></div>
+            </div>
+            <div class="w-full lg:w-1/2"> 
+              <h3 id="modal-title" class="text-xl font-bold text-gray-900">${product.name}</h3>
+              <p class="text-xs uppercase tracking-wide text-gray-400 mt-3">
+                Description
+              </p>
+              <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+                ${product.description}
+              </p>
+              <p id="modal-category" class="text-sm text-gray-500 mb-2">${product.category}</p>
+              <p id="modal-price" class="text-2xl font-extrabold text-[var(--dsk-green)] mb-4">₹${product.variants[0].price}</p>
+
+              <div id="modal-variants" class="mb-4"> 
+                <select id="modal-variant-select">${product.variants.map(v=>`<option value="${v.id}">${v.size} (₹${v.price})</option>`).join('')}</select>
+              </div>
+
+              <div class="flex items-center gap-3">
+              ${
+                product.stock === 0
+                  ? `<span class="text-red-600 font-semibold text-sm">
+                      Out of Stock
+                    </span>`
+                  : `
+                    <!-- Quantity Selector -->
+                    <div class="flex items-center border rounded-lg overflow-hidden">
+                      <button id="qty-minus"
+                        class="px-3 py-2 bg-gray-100 hover:bg-gray-200">−</button>
+
+                      <span id="qty-value"
+                        class="px-4 min-w-[40px] text-center font-semibold">1</span>
+
+                      <button id="qty-plus"
+                        class="px-3 py-2 bg-gray-100 hover:bg-gray-200">+</button>
+                    </div>
+
+                    <!-- Add to Cart -->
+                    <button id="modal-add-btn"
+                      class="bg-[var(--dsk-green)] text-white px-5 py-2 rounded">
+                      Add to Cart
+                    </button>
+
+                    <!-- Buy Now -->
+                    <button id="modal-buy-now"
+                      class="bg-dsk-accent text-white px-5 py-2 rounded">
+                      Buy Now
+                    </button>
+                  `
+              }
+              </div>
+
+            </div>
+          </div>
+        </div>
+      `;
+      lucide.createIcons();
+      let qty = 1;
+
+      const qtyValue = document.getElementById("qty-value");
+      const btnPlus = document.getElementById("qty-plus");
+      const btnMinus = document.getElementById("qty-minus");
+
+      if (btnPlus && btnMinus && qtyValue) {
+        btnPlus.onclick = () => {
+          qty++;
+          qtyValue.innerText = qty;
+        };
+
+        btnMinus.onclick = () => {
+          if (qty > 1) {
+            qty--;
+            qtyValue.innerText = qty;
+          }
+        };
+      }
+
+
+      const thumbs = document.getElementById('modal-thumbs');
+      // removed explicit border so thumbnails show freely with page background
+      thumbs.innerHTML = product.images.map((img,i)=>`<img src="${img}" class="w-16 h-16 object-contain rounded cursor-pointer" data-index="${i}"/>`).join('');
+      thumbs.querySelectorAll('img').forEach(imgEl=> imgEl.addEventListener('click', (ev)=>{ const idx = Number(ev.currentTarget.dataset.index); setModalImage(idx); }));
+
+      const addBtn = document.getElementById('modal-add-btn');
+      const buyBtn = document.getElementById('modal-buy-now');
+
+      if (addBtn && buyBtn) {
+        addBtn.onclick = () => {
+          const sel = document.getElementById('modal-variant-select').value;
+          addToCart(sel, qty);
+        };
+
+        buyBtn.onclick = () => {
+          const sel = document.getElementById('modal-variant-select').value;
+          addToCart(sel, 1);
+          openCart();
+        };
+      }
+      overlay.classList.remove('hidden');
+    }
+    function closeProductModal(){ const overlay = document.getElementById('product-modal-overlay'); overlay.classList.add('hidden'); overlay.innerHTML = ''; modalState.currentProduct=null; }
+    function setModalImage(i){ if(!modalState.currentProduct) return; modalState.currentIndex = i; document.getElementById('modal-main-img').src = modalState.currentProduct.images[i]; }
+    function prevModalImage(){ if(!modalState.currentProduct) return; modalState.currentIndex = (modalState.currentIndex-1+modalState.currentProduct.images.length)%modalState.currentProduct.images.length; setModalImage(modalState.currentIndex); }
+    function nextModalImage(){ if(!modalState.currentProduct) return; modalState.currentIndex = (modalState.currentIndex+1)%modalState.currentProduct.images.length; setModalImage(modalState.currentIndex); }
+
+    /* ------------------ SIMPLE CHECKOUT FLOW (NO RAZORPAY) ------------------ */
+    function startCheckout(){
+      if(state.cartItems.length === 0){ showMessage('Your cart is empty.'); return; }
+
+      // Endpoint - change to your real endpoint
+      const ORDER_ENDPOINT = '/api/orders/';
+
+      // build overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'checkout-overlay';
+      overlay.style.position = 'fixed';
+      overlay.style.inset = '0';
+      overlay.style.zIndex = '9999';
+      overlay.style.background = 'rgba(0,0,0,0.55)';
+      overlay.style.display = 'flex';
+      overlay.style.alignItems = 'center';
+      overlay.style.justifyContent = 'center';
+      overlay.style.padding = '12px';
+
+      // compact modal: reduced vertical size, scrollable form, buttons fixed to bottom area inside modal
+      overlay.innerHTML = `
+        <div class="bg-white rounded-2xl w-full max-w-md p-3 mx-2 flex flex-col" style="max-height:72vh;">
+          <div class="flex items-center justify-between mb-2">
+            <h3 class="text-base font-bold">Checkout & Delivery Details</h3>
+            <button id="checkout-close" class="p-1 rounded-full hover:bg-gray-100"><i data-lucide="x" class="h-4 w-4"></i></button>
+          </div>
+
+          <form id="checkout-form" class="flex flex-col gap-2 overflow-auto" style="min-height:0;">
+            <div>
+              <label class="text-sm font-medium">Full name</label>
+              <input id="order-name" required class="mt-1 w-full border rounded checkout-input" placeholder="e.g. Ravi Kumar" />
+            </div>
+
+            <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div>
+                <label class="text-sm font-medium">Phone</label>
+                <input id="order-phone" required type="tel" class="mt-1 w-full border rounded checkout-input" placeholder="e.g. +91 98765 43210" />
+              </div>
+              <div>
+                <label class="text-sm font-medium">Email</label>
+                <input id="order-email" required type="email" class="mt-1 w-full border rounded checkout-input" placeholder="you@domain.com" />
+              </div>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Delivery address</label>
+              <textarea id="order-address" required class="mt-1 w-full border rounded checkout-textarea" rows="2" placeholder="House no, street, locality, city, pin code"></textarea>
+            </div>
+
+            <div>
+              <label class="text-sm font-medium">Auto-detected location (optional)</label>
+              <div class="flex gap-2 mt-1">
+                <input id="order-lat" readonly class="w-1/2 border rounded checkout-input" placeholder="Latitude" />
+                <input id="order-lon" readonly class="w-1/2 border rounded checkout-input" placeholder="Longitude" />
+              </div>
+              <div class="flex gap-2 mt-2">
+                <button id="order-detect" type="button" class="flex-1 bg-[var(--dsk-green)] text-white py-1.5 rounded text-sm">Detect Location</button>
+                <button id="order-apply-coords" type="button" class="flex-1 border py-1.5 rounded text-sm">Add Coords</button>
+              </div>
+              <p id="order-geo-status" class="text-xs text-gray-500 mt-1">Allow location permission to auto-fill coordinates.</p>
+            </div>
+
+            <div class="pt-2 border-t">
+              <h4 class="text-sm font-semibold mb-1">Order summary</h4>
+              <div id="order-items" class="text-sm text-gray-700 max-h-28 overflow-auto"></div>
+              <div class="flex justify-between mt-2 font-bold text-base"><span>Total</span><span id="order-total">₹0.00</span></div>
+            </div>
+
+            <!-- spacer to push buttons to bottom when content small -->
+            <div style="height:6px;"></div>
+
+            <div id="modal-buttons" class="flex modal-buttons-row mt-2">
+              <button id="order-submit" type="submit" class="flex-1 bg-[var(--dsk-green)] text-white py-2 rounded text-sm">Place Order</button>
+              <button id="order-cancel" type="button" class="flex-1 border py-2 rounded text-sm">Cancel</button>
+            </div>
+          </form>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      lucide.createIcons();
+
+      // fill order items and total
+      const orderItemsEl = document.getElementById('order-items');
+      orderItemsEl.innerHTML = state.cartItems.map(it=>`<div class="flex items-center justify-between mb-1"><div><div class="font-medium text-sm">${it.name} <span class="text-xs text-gray-500">(${it.size||''})</span></div><div class="text-xs text-gray-500">₹${it.price} × ${it.quantity}</div></div><div class="font-semibold text-sm">₹${(it.price*it.quantity).toFixed(2)}</div></div>`).join('');
+      const subtotal = state.cartItems.reduce((s,i)=>s+i.price*i.quantity,0);
+      const delivery = subtotal>0 && subtotal<500?30:0;
+      const grand = subtotal + delivery;
+      document.getElementById('order-total').innerText = `₹${grand.toFixed(2)}`;
+
+      // wire modal controls
+      document.getElementById('checkout-close').addEventListener('click', ()=>overlay.remove());
+      document.getElementById('order-cancel').addEventListener('click', ()=>overlay.remove());
+
+      // geolocation inside modal
+      document.getElementById('order-detect').addEventListener('click', ()=>{
+        const statusEl = document.getElementById('order-geo-status');
+        if(!navigator.geolocation){ statusEl.innerText = 'Geolocation not supported by your browser.'; return; }
+        statusEl.innerText = 'Detecting...';
+        navigator.geolocation.getCurrentPosition((pos)=>{
+          const lat = pos.coords.latitude.toFixed(6); const lon = pos.coords.longitude.toFixed(6);
+          document.getElementById('order-lat').value = lat; document.getElementById('order-lon').value = lon;
+          statusEl.innerText = `Detected: ${lat}, ${lon}`;
+        }, (err)=>{ statusEl.innerText = 'Unable to detect location: ' + (err.message || 'permission denied'); }, { enableHighAccuracy:true, timeout:10000 });
+      });
+
+      document.getElementById('order-apply-coords').addEventListener('click', ()=>{
+        const lat = document.getElementById('order-lat').value; const lon = document.getElementById('order-lon').value;
+        if(!lat || !lon){ document.getElementById('order-geo-status').innerText = 'No coords available. Detect location first.'; return; }
+        const addr = document.getElementById('order-address');
+        addr.value = (addr.value? addr.value + '\n' : '') + `[Detected coords: ${lat}, ${lon}]`;
+      });
+
+      // submit handler (posts to backend)
+      document.getElementById('checkout-form').addEventListener('submit', async (ev)=>{
+        ev.preventDefault();
+        const submitBtn = document.getElementById('order-submit');
+        submitBtn.disabled = true;
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Placing...';
+
+        const name = document.getElementById('order-name').value.trim();
+        const phone = document.getElementById('order-phone').value.trim();
+        const email = document.getElementById('order-email').value.trim();
+        const address = document.getElementById('order-address').value.trim();
+        const lat = document.getElementById('order-lat').value || null; const lon = document.getElementById('order-lon').value || null;
+        if(!name || !phone || !email || !address){ alert('Please fill all required fields.'); submitBtn.disabled=false; submitBtn.innerText = originalText; return; }
+
+        const order = {
+          // ✅ TOP LEVEL (backend expects these)
+          address,
+          phone,
+          subtotal,
+          delivery,
+          total: grand,
+
+          // ✅ guest details (optional identity info)
+          guest: {
+            name: name,
+            phone: phone,        // ✅ REQUIRED BY BACKEND
+            email: email,
+            address: address,    // ✅ REQUIRED BY BACKEND
+            lat: lat,
+            lon: lon
+          },
+          // ✅ order items
+          items: state.cartItems.map(i => ({
+          product_id: i.product_id,
+          qty: i.quantity,
+          price: i.price
+            }))
+          };
+
+        // show payload in console for debugging
+        console.log('ORDER_PAYLOAD', order);
+
+        try{
+            const res = await fetch(ORDER_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(order),
+        });
+
+        if (!res.ok) {
+          alert("Item is out of stock ");
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalText;
+          return;
+        }
+
+        const data = await res.json();
+        // backend MUST return order_id
+        // example: { order_id: 12 }
+        openRazorpayPayment(data.order_id, grand, name, email, phone);
+        return;
+
+        }catch(err){
+          console.error('Order submit failed', err);
+          // Friendly fallback: store order locally and show success-like message
+          try { localStorage.setItem('dsk_last_failed_order', JSON.stringify(order)); } catch(e){ console.warn('Could not save failed order to localStorage', e); }
+          showMessage('Order saved locally — we will retry. Contact support if needed.');
+          overlay.remove();
+          state.cartItems = [];
+          renderCart();
+        }
+      });
+    }
+    /* ================== RAZORPAY PAYMENT ================== */
+
+async function openRazorpayPayment(orderId, amount, name, email, phone) {
+
+  const res = await fetch("/api/create-razorpay-order/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ order_id: orderId })
+  });
+
+  const data = await res.json();
+  console.log("RAZORPAY DATA:", data);
+
+  const options = {
+    key: data.key,
+    amount: data.amount,
+    currency: "INR",
+    name: "DSK Naturals",
+    description: "Order Payment",
+    order_id: data.razorpay_order_id,
+
+    prefill: {
+      name: name,
+      email: email,
+      contact: phone
+    },
+
+    handler: function (response) {
+      verifyRazorpayPayment(response);
+    },
+
+    theme: { color: "#005953" }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+async function verifyRazorpayPayment(response) {
+
+  const res = await fetch("/api/verify-payment/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(response)
+  });
+
+  const data = await res.json();
+
+  if (data.status === "success") {
+    showMessage("Payment successful 🎉");
+    lastOrderId = data.order_id;   // 🔥 STORE DJANGO ORDER ID
+    console.log("Invoice Order ID:", lastOrderId);
+
+    document.getElementById('checkout-overlay')?.remove();
+    state.cartItems = [];
+    renderCart();
+
+    // Invoice popup
+    const invoiceBox = document.createElement('div');
+    invoiceBox.style.position = 'fixed';
+    invoiceBox.style.bottom = '20px';
+    invoiceBox.style.right = '20px';
+    invoiceBox.style.background = '#ffffff';
+    invoiceBox.style.border = '1px solid #e5e7eb';
+    invoiceBox.style.padding = '12px';
+    invoiceBox.style.borderRadius = '8px';
+    invoiceBox.style.boxShadow = '0 10px 25px rgba(0,0,0,0.15)';
+    invoiceBox.style.zIndex = '9999';
+
+    invoiceBox.innerHTML = `
+      <div style="font-weight:600; margin-bottom:8px;">
+        Payment Successful
+      </div>
+      <button
+        onclick="downloadInvoice(lastOrderId)"
+        style="background:#16a34a;color:#fff;padding:8px 14px;border:none;border-radius:6px;cursor:pointer;">
+        Download Invoice
+      </button>
+    `;
+
+    document.body.appendChild(invoiceBox);
+    setTimeout(() => invoiceBox.remove(), 20000);
+
+  } else {
+    alert("Payment verification failed");
+  }
+}
+
+    /* ------------------ BOOTSTRAP & RENDER ------------------ */
+    function updateState(newState){ state = { ...state, ...newState }; renderAll(); }
+    function navigateTo(page){ if(page==='products') { const el = document.querySelector('[data-section="products"]'); if(el) el.scrollIntoView({behavior:'smooth'}); } }
+
+    function renderAll(){ renderCarousel(); renderCategoryTabs(); renderProducts(); renderCart(); }
+
+    // initial render
+    
+
+    // wire carousel controls
+    document.getElementById('carousel-prev').addEventListener('click', ()=>{ prevBanner(); clearInterval(bannerInterval); bannerInterval = setInterval(nextBanner,5000); });
+    document.getElementById('carousel-next').addEventListener('click', ()=>{ nextBanner(); clearInterval(bannerInterval); bannerInterval = setInterval(nextBanner,5000); });
+
+    // logo enlarge
+    const logo = document.getElementById('site-logo');
+    logo.addEventListener('click', ()=>{ logo.classList.toggle('enlarged'); if(logo.classList.contains('enlarged')) window.scrollTo({top:0,behavior:'smooth'}); });
+
+    // search wiring
+    document.getElementById('global-search').addEventListener('input',(e)=>{ updateState({searchTerm:e.target.value}); });
+
+    // cart open/close wiring
+    document.getElementById('cart-toggle').addEventListener('click', ()=>{ renderCart(); openCart(); });
+    function downloadInvoice(orderId) {
+    if (!orderId) {
+      alert("Order ID not found");
+      return;
+  }
+  window.open(`/api/invoice/${orderId}/`, "_blank");
+}
+/* ================== CANCEL ORDER ================== */
+
+// CSRF helper (needed for Django)
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Main cancel function
+async function cancelOrder(orderId) {
+  const reason = prompt("Please enter reason for cancellation:");
+
+  if (!reason || !reason.trim()) {
+    alert("Cancellation reason is required");
+    return;
+  }
+
+  try {
+    const res = await fetch(`/api/order/${orderId}/cancel/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCookie("csrftoken"),
+      },
+      body: JSON.stringify({ reason: reason }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Cancellation failed");
+      return;
+    }
+
+    showMessage("Cancellation request sent ✅");
+    location.reload();
+
+  } catch (err) {
+    console.error("Cancel order error", err);
+    alert("Something went wrong while cancelling");
+  }
+}
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    await loadBackendProducts();   // fetch /api/products/
+  } catch (e) {
+    console.warn("Backend not reachable, loading products anyway");
+  }
+  renderAll();
+});
+/* ================== ABOUT DSK NATURALS SCROLL ================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const aboutText = document.getElementById("about-scroll-text");
+  if (!aboutText) return; // safety check
+
+  let pos = aboutText.parentElement.offsetHeight;
+
+  function scrollAboutText() {
+    pos -= 0.3; // speed (0.2 = slower, 0.5 = faster)
+    aboutText.style.top = pos + "px";
+
+    if (pos < -aboutText.offsetHeight) {
+      pos = aboutText.parentElement.offsetHeight;
+    }
+  }
+
+  let aboutInterval = setInterval(scrollAboutText,5);
+
+  // Pause on hover
+  const box = aboutText.parentElement;
+  box.addEventListener("mouseenter", () => clearInterval(aboutInterval));
+  box.addEventListener("mouseleave", () => {
+    aboutInterval = setInterval(scrollAboutText, 5);
+  });
+});
+
+</script>
+
+    <footer class="bg-white border-t mt-12">
+      
+      <!-- MAIN FOOTER GRID -->
+      <div class="max-w-7xl mx-auto px-6 py-10
+                  grid grid-cols-1 md:grid-cols-3 gap-10">
+
+        <!-- 1️⃣ Logo + Social -->
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <img src="https://res.cloudinary.com/drmgywvk0/image/upload/v1762253211/logodsk_sxqwud.png"
+              class="h-20 mb-4" alt="DSK Naturals Logo">
+
+          <p class="text-gray-600 text-sm mb-4">
+            Feel Free To Follow Us On Our Social Media<br>
+            Handlers, All The Links Are Given Below
+          </p>
+
+          <div class="flex space-x-3 mt-4">
+            <a href="https://www.facebook.com/dsknaturals" target="_blank"
+              class="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-md hover:bg-gray-300">
+              <i class="fab fa-facebook-f text-blue-600"></i>
+            </a>
+
+            <a href="https://www.instagram.com/dsknaturals" target="_blank"
+              class="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-md hover:bg-gray-300">
+              <i class="fab fa-instagram text-pink-600"></i>
+            </a>
+
+            <a href="https://wa.me/919611096016" target="_blank"
+              class="w-10 h-10 flex items-center justify-center bg-gray-200 rounded-md hover:bg-gray-300">
+              <i class="fab fa-whatsapp text-green-600"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- 2️⃣ Contact Info -->
+        <div class="flex flex-col items-center md:items-start text-center md:text-left">
+          <h2 class="text-xl font-bold text-[#001b36] mb-4">Contact Info</h2>
+
+          <p class="flex items-center gap-2 mb-2 text-gray-700">
+            <i class="fas fa-phone text-green-600"></i> +91 9611096016
+          </p>
+          <p class="flex items-center gap-2 mb-2 text-gray-700">
+            <i class="fas fa-envelope text-green-600"></i> info@dsknaturals.com
+          </p>
+          <p class="flex items-start gap-2 text-gray-700 max-w-sm">
+            <i class="fas fa-map-marker-alt text-green-600 mt-1"></i>
+            29/2 Alappanahalli Village Main Road,  
+            Hoskote Taluk, Bengaluru Rural,  
+            Karnataka – 562114
+          </p>
+        </div>
+
+        <!-- 3️⃣ About Company -->
+        <!-- 3️⃣ About Company (Scrolling) -->
+        <div class="text-gray-700 text-sm leading-relaxed text-center md:text-left">
+        <h2 class="text-xl font-bold text-[#001b36] mb-4">
+            About DSK Naturals
+        </h2>
+
+        <div class="relative h-40 overflow-hidden border rounded-lg bg-gray-50 px-3">
+          <div id="about-scroll-text" class="absolute left-0 top-full w-full space-y-3 text-sm">
+          
+          <p><strong>Where Purity Meets Flavour</strong></p>
+
+          <p>
+            DSK Naturals is a natural products brand built on the belief that true purity begins at the source.
+            Rooted in sustainability and integrity, we create products that celebrate authentic flavour while
+            empowering rural communities that nurture the land.
+
+            Our work goes beyond food. It is about restoring balance—between people and nature, 
+            tradition and progress, purity and purpose.
+          </p>
+          <p><strong>Our Story</strong></p>
+          <p>
+            DSK Naturals was founded by Diana SK, driven by a deep desire to understand why existing systems 
+            often fail to address rural instability and economic hardship. Rather than responding to the 
+            symptoms of poverty, Diana envisioned a new possibility—one where poverty would have no space to exist.
+            She found the idea of creating resilience far more powerful than simply eradicating poverty. 
+            This philosophy became the foundation of DSK Naturals.
+          </p>
+          <p><strong>The Journey</strong></p>
+          <p>
+            In early 2013, Diana stepped away from her corporate career and embarked on a journey across rural India. 
+            Over the next two and a half years, she lived with bottom-of-the-pyramid families across different regions, 
+            gaining firsthand insight into the relationship between livelihoods, development, and sustainability.
+            These experiences shaped a deeper understanding: meaningful change must be built from the ground up—by
+            strengthening local capacities, restoring natural systems, and enabling communities to thrive independently.
+
+            Rooted in Rural India
+            Since August 2017, Diana has been living and working in Hoskote taluk, 
+            a drought-prone region in rural Bengaluru,
+            Karnataka—one of the driest and most economically challenged districts in the country.
+            Here, DSK Naturals actively focuses on:
+            Reviving natural and organic farming practices
+            Empowering farmers through education and awareness
+            Encouraging sustainable livelihoods
+            Rebuilding trust in traditional, natural products
+            Our Philosophy
+            At DSK Naturals, agriculture is not just about food. 
+            It is a transformative force—one that has shaped civilizations,
+            strengthened communities, and connected humanity to nature.
+          </p>
+          <p><strong>We believe</strong></p>  
+          <p>
+            Purity begins in healthy soil
+            True flavour is born from natural processes
+            Resilient communities create lasting prosperity
+            By blending traditional wisdom with conscious practices, DSK Naturals delivers products that respect nature, honour farmers, and offer consumers purity they can trust.
+          </p>
+          <p><strong>Our Promise</strong></p>  
+          <P>
+            Every product from DSK Naturals reflects our commitment to authenticity,
+            sustainability, and impact. From farm to table, 
+            we remain dedicated to creating natural products that nourish both people and the planet.
+          </P>
+          <p><strong>Founder’s Note</strong></p>
+          <P>
+            DSK Naturals was never conceived as a business alone—it began as a question.
+            After years in the corporate world,
+            I felt compelled to understand why so many systems designed to create progress 
+            often leave the most vulnerable behind. That question led me away from boardrooms and into rural India,
+            where I spent over two and a half years living alongside families whose lives were shaped by the land, 
+            the seasons, and resilience born of necessity.
+            What I witnessed was not merely hardship,
+            but an extraordinary strength—an inherent wisdom in the way communities understood nature, 
+            food, and survival. I realised that true transformation does not come from reacting to poverty,
+            but from creating conditions in which it simply has no place to exist.
+            DSK Naturals was born from this belief.
+            Since 2017, my work has been rooted in Hoskote taluk, a drought-prone region of rural Karnataka.
+            Here, alongside farmers and local leaders, we have focused on restoring natural agricultural practices,
+            strengthening livelihoods, and reviving trust in the purity of what we grow and consume.
+            To me, agriculture is not just about nourishment. It is a powerful force that has shaped civilizations, 
+            cultures, and collective memory. When approached with respect and intention,
+            it has the ability to heal—both people and the planet.
+            Every product at DSK Naturals reflects this philosophy.
+            It carries the story of the soil it comes from, the hands that cultivate it, 
+            and a commitment to purity that goes beyond certification or trend.
+            My hope is that DSK Naturals becomes more than a brand you trust—it becomes a quiet reminder that flavour,
+            integrity, and responsibility are inseparable. 
+            That luxury, in its truest sense, lies in simplicity, authenticity, and conscious choice.
+            — Diana SK
+            Founder, DSK Naturals
+          </P>
+
+          </div>
+        </div>
+      </div>
+
+
+      <!-- COPYRIGHT -->
+      <div class="w-full text-left text-gray-500 text-sm py-4 border-t">
+        © 2026 DSK Naturals. All rights reserved.
+      </div>
+
+    </footer>
+
+</body>
+</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         

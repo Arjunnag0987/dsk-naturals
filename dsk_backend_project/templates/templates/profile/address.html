@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="max-w-5xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-8">
+
+  <!-- SAVED ADDRESSES -->
+  <div>
+    <h2 class="text-2xl font-semibold mb-6">Saved Addresses</h2>
+
+    {% if addresses %}
+      {% for addr in addresses %}
+        <div class="bg-white p-4 rounded-xl shadow mb-4">
+          <p class="font-semibold">{{ addr.full_name }}</p>
+          <p>{{ addr.address }}</p>
+          <p>{{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}</p>
+          <p class="text-sm text-gray-600">📞 {{ addr.phone }}</p>
+
+          <a href="?edit={{ addr.id }}"
+             class="text-blue-600 text-sm font-semibold mt-2 inline-block">
+             ✏️ Edit
+          </a>
+          <form
+            method="POST"
+            action="{% url 'delete_address' addr.id %}"
+            onsubmit="return confirm('Are you sure you want to delete this address?');"
+          >
+            {% csrf_token %}
+            <button
+              type="submit"
+              class="flex items-center gap-1 text-red-600 font-semibold hover:underline"
+            >
+              🗑 Delete
+            </button>
+          </form>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No saved addresses.</p>
+    {% endif %}
+  </div>
+
+  <!-- ADD / EDIT FORM -->
+  <div class="bg-white p-6 rounded-xl shadow">
+    <h2 class="text-xl font-semibold mb-4">
+      {% if edit_address %}Edit Address{% else %}Add New Address{% endif %}
+    </h2>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      {% if edit_address %}
+        <input type="hidden" name="address_id" value="{{ edit_address.id }}">
+      {% endif %}
+
+      <input name="full_name" placeholder="Full Name"
+             value="{{ edit_address.full_name|default:'' }}"
+             class="w-full border p-2 mb-2 rounded">
+
+      <input name="phone" placeholder="Phone"
+             value="{{ edit_address.phone|default:'' }}"
+             class="w-full border p-2 mb-2 rounded">
+
+      <textarea name="address" placeholder="Address"
+                class="w-full border p-2 mb-2 rounded">{{ edit_address.address|default:'' }}</textarea>
+
+      <input name="city" placeholder="City"
+             value="{{ edit_address.city|default:'' }}"
+             class="w-full border p-2 mb-2 rounded">
+
+      <input name="state" placeholder="State"
+             value="{{ edit_address.state|default:'' }}"
+             class="w-full border p-2 mb-2 rounded">
+
+      <input name="pincode" placeholder="Pincode"
+             value="{{ edit_address.pincode|default:'' }}"
+             class="w-full border p-2 mb-4 rounded">
+
+      <button class="w-full bg-green-700 text-white py-2 rounded">
+        {% if edit_address %}Update Address{% else %}Save Address{% endif %}
+      </button>
+
+      {% if edit_address %}
+        <a href="{% url 'address' %}"
+           class="block text-center text-sm text-gray-600 mt-2">
+          Cancel Edit
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+</div>
+
+{% endblock %}

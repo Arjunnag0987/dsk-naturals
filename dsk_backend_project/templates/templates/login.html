@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Profile | DSK Naturals</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gradient-to-br from-green-100 to-green-50 min-h-screen">
+
+<!-- HEADER -->
+<header class="bg-white shadow-sm">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-green-700">DSK Naturals</h1>
+
+    <nav class="space-x-6 text-sm font-medium text-gray-700">
+      <a href="/" class="hover:text-green-700">Home</a>
+      <a href="/api/profile/" class="text-green-700 font-semibold">My Profile</a>
+      <a href="{% url 'logout' %}" class="text-red-600 hover:underline">Logout</a>
+    </nav>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="flex items-center justify-center py-12 px-4">
+
+  <div class="bg-white shadow-xl rounded-2xl w-full max-w-4xl p-8">
+
+    <!-- TITLE -->
+    <div class="text-center mb-8">
+      <img
+        src="{{ profile.profile_image.url }}"
+        class="w-28 h-28 mx-auto rounded-full object-cover border-4 border-green-700"
+        alt="Profile Image"
+      />
+
+      <h2 class="text-2xl font-bold text-green-700 mt-4">
+        {{ request.user.username }}
+      </h2>
+
+      <p class="text-gray-500 text-sm">
+        {{ request.user.email }}
+      </p>
+    </div>
+
+    <!-- ACTION GRID -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- My Orders -->
+      <a href="{% url 'my_orders' %}"
+         class="p-6 rounded-xl border hover:shadow-md transition text-center">
+        <div class="text-3xl mb-2">🛒</div>
+        <h3 class="font-semibold text-gray-800">My Orders</h3>
+        <p class="text-sm text-gray-500 mt-1">Track & manage orders</p>
+      </a>
+
+      <!-- Wishlist -->
+      <a href="{% url 'wishlist' %}"
+         class="p-6 rounded-xl border hover:shadow-md transition text-center">
+        <div class="text-3xl mb-2">❤️</div>
+        <h3 class="font-semibold text-gray-800">Wishlist</h3>
+        <p class="text-sm text-gray-500 mt-1">Saved products</p>
+      </a>
+
+      <!-- Address -->
+      <a href="{% url 'address' %}"
+         class="p-6 rounded-xl border hover:shadow-md transition text-center">
+        <div class="text-3xl mb-2">📍</div>
+        <h3 class="font-semibold text-gray-800">Saved Address</h3>
+        <p class="text-sm text-gray-500 mt-1">Delivery locations</p>
+      </a>
+
+      <!-- Edit Profile -->
+      <a href="{% url 'edit_profile' %}"
+         class="p-6 rounded-xl border hover:shadow-md transition text-center">
+        <div class="text-3xl mb-2">✏️</div>
+        <h3 class="font-semibold text-gray-800">Edit Profile</h3>
+        <p class="text-sm text-gray-500 mt-1">Update your info</p>
+      </a>
+
+      <!-- Help Center -->
+      <a href="#"
+         class="p-6 rounded-xl border hover:shadow-md transition text-center">
+        <div class="text-3xl mb-2">❓</div>
+        <h3 class="font-semibold text-gray-800">Help Center</h3>
+        <p class="text-sm text-gray-500 mt-1">Need assistance?</p>
+      </a>
+
+      <!-- Logout -->
+      <a href="{% url 'logout' %}"
+         class="p-6 rounded-xl border border-red-200 hover:bg-red-50 transition text-center">
+        <div class="text-3xl mb-2">🚪</div>
+        <h3 class="font-semibold text-red-600">Logout</h3>
+        <p class="text-sm text-red-500 mt-1">Sign out securely</p>
+      </a>
+
+    </div>
+
+  </div>
+
+</main>
+
+</body>
+</html>

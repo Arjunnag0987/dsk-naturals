@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Invoice</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+    }
+    h2 {
+      margin: 0;
+    }
+    h3 {
+      margin-bottom: 5px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 6px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .right {
+      text-align: right;
+    }
+    .section {
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<table width="100%">
+  <tr>
+    <td>
+      <img src="{{ logo_path }}" width="120" height="100" alt="DSK Naturals Logo">
+    </td>
+    <td align="right">
+      <h2>DSK Naturals - Invoice</h2>
+    </td>
+  </tr>
+</table>
+
+<hr>
+
+<!-- ORDER INFO -->
+<div class="section">
+  <p><strong>Order ID:</strong> {{ order.id }}</p>
+  <p><strong>Date:</strong> {{ order.created_at }}</p>
+  <p><strong>Status:</strong> {{ order.status }}</p>
+</div>
+
+<!-- CUSTOMER DETAILS -->
+<div class="section">
+  <h3>Customer Details</h3>
+
+  {% if order.customer %}
+    <p><strong>Name:</strong> {{ order.customer.username }}</p>
+    <p><strong>Email:</strong> {{ order.customer.email }}</p>
+  {% else %}
+    <p><strong>Name:</strong> {{ order.guest_customer.name }}</p>
+    <p><strong>Email:</strong> {{ order.guest_customer.email }}</p>
+  {% endif %}
+
+  <p><strong>Phone:</strong> {{ order.phone }}</p>
+  <p><strong>Delivery Address:</strong> {{ order.address }}</p>
+</div>
+
+<!-- PRODUCT DETAILS -->
+<div class="section">
+  <h3>Product Details</h3>
+
+  <table>
+    <tr>
+      <th>Product</th>
+      <th class="right">Qty</th>
+      <th class="right">Price</th>
+      <th class="right">Total</th>
+    </tr>
+
+    {% for item in order.items.all %}
+    <tr>
+      <td>{{ item.product.name }}</td>
+      <td class="right">{{ item.quantity }}</td>
+      <td class="right">Rs. {{ item.price }}</td>
+      <td class="right">Rs. {{ item.line_total }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<!-- AMOUNT SUMMARY -->
+<div class="section">
+  <table>
+    <tr>
+      <td class="right"><strong>Subtotal</strong></td>
+      <td class="right">Rs. {{ order.subtotal }}</td>
+    </tr>
+    <tr>
+      <td class="right"><strong>Delivery Charge</strong></td>
+      <td class="right">Rs. {{ order.delivery_charge }}</td>
+    </tr>
+    <tr>
+      <td class="right"><strong>Grand Total</strong></td>
+      <td class="right"><strong>Rs. {{ order.total_amount }}</strong></td>
+    </tr>
+  </table>
+</div>
+
+<p style="text-align:center; margin-top:20px;">
+  Thank you for shopping with <strong>DSK Naturals</strong>
+</p>
+
+</body>
+</html>
