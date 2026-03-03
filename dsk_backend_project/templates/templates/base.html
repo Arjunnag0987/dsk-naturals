@@ -25,11 +25,16 @@
 <body class="bg-gray-50 text-gray-800">
 
   <!-- Header (optional) -->
-  <header class="bg-white shadow-sm">
+  <header class="bg-white shadow-sm relative">
   <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-    <h1 class="text-xl font-bold text-dsk">DSK Naturals</h1>
 
-    <nav class="space-x-4">
+    <!-- Logo -->
+    <h1 class="text-xl font-bold text-dsk">
+      DSK Naturals
+    </h1>
+
+    <!-- Desktop Nav -->
+    <nav class="hidden md:flex space-x-4 text-sm font-medium">
       <a href="/" class="text-gray-700 hover:text-dsk">Home</a>
 
       {% if user.is_authenticated %}
@@ -40,8 +45,32 @@
         <a href="{% url 'register' %}" class="text-gray-700 hover:text-dsk">Register</a>
       {% endif %}
     </nav>
+
+    <!-- Mobile Hamburger -->
+    <button id="mobile-menu-btn"
+            class="md:hidden text-2xl text-dsk focus:outline-none">
+      ☰
+    </button>
+
+  </div>
+
+  <!-- Mobile Dropdown -->
+  <div id="mobile-menu"
+       class="hidden md:hidden bg-white border-t px-4 py-4 space-y-3 text-sm font-medium">
+
+    <a href="/" class="block text-gray-700 hover:text-dsk">Home</a>
+
+    {% if user.is_authenticated %}
+      <a href="/api/profile/" class="block text-gray-700 hover:text-dsk">My Profile</a>
+      <a href="{% url 'logout' %}" class="block text-red-600">Logout</a>
+    {% else %}
+      <a href="{% url 'login' %}" class="block text-gray-700 hover:text-dsk">Login</a>
+      <a href="{% url 'register' %}" class="block text-gray-700 hover:text-dsk">Register</a>
+    {% endif %}
+
   </div>
 </header>
+
 
 
   <!-- Page Content -->
@@ -96,7 +125,15 @@ function getCookie(name) {
   return cookieValue;
 }
 </script>
+<script>
+  const mobileBtn = document.getElementById("mobile-menu-btn");
+  const mobileMenu = document.getElementById("mobile-menu");
 
-
+  if (mobileBtn && mobileMenu) {
+    mobileBtn.addEventListener("click", function () {
+      mobileMenu.classList.toggle("hidden");
+    });
+  }
+</script>
 </body>
 </html>

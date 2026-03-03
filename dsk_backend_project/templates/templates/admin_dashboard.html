@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Sales Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+
+<h1 class="text-3xl font-bold mb-6">📊 Sales Dashboard</h1>
+
+<!-- 🔍 Filter -->
+<form method="get" class="mb-6 flex gap-4">
+    <input type="date" name="start_date" class="p-2 border rounded">
+    <input type="date" name="end_date" class="p-2 border rounded">
+    <button class="bg-blue-500 text-white px-4 py-2 rounded">
+        Filter
+    </button>
+
+    <a href="/export-sales/" 
+       class="bg-green-500 text-white px-4 py-2 rounded">
+        📥 Export to Excel
+    </a>
+</form>
+
+<!-- Stats -->
+<div class="grid grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 shadow rounded">
+        <h2>Total Orders</h2>
+        <p class="text-2xl font-bold">{{ total_orders }}</p>
+    </div>
+
+    <div class="bg-white p-6 shadow rounded">
+        <h2>Total Revenue</h2>
+        <p class="text-2xl font-bold">₹ {{ total_revenue }}</p>
+    </div>
+</div>
+
+<!-- 📊 Chart -->
+<div class="bg-white p-6 shadow rounded">
+    <h2 class="text-xl font-bold mb-4">Last 7 Days Revenue</h2>
+    <canvas id="revenueChart"></canvas>
+</div>
+
+<script>
+const ctx = document.getElementById('revenueChart');
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ labels|safe }},
+        datasets: [{
+            label: 'Revenue (₹)',
+            data: {{ data|safe }},
+            borderWidth: 2
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

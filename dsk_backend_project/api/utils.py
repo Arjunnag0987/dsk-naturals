@@ -2,6 +2,7 @@ import random
 from django.core.mail import send_mail
 import urllib.parse
 from django.conf import settings
+import requests
 
 
 def generate_delivery_otp():
@@ -64,3 +65,26 @@ def generate_whatsapp_otp_link(order):
     encoded_message = urllib.parse.quote(message)
 
     return f"https://wa.me/{phone}?text={encoded_message}"
+
+def send_delivery_sms(order):
+    url = "https://control.msg91.com/api/v5/flow/"
+
+    payload = {
+        "template_id": settings.MSG91_TEMPLATE_ID,
+        "short_url": "0",
+        "recipients": [
+            {
+                "mobiles": f"91{order.phone}",
+                "var1": order.delivery_otp,   # OTP variable
+                "var2": order.id              # Order ID variable
+            }
+        ]
+    }
+
+    headers = {
+        "authkey": settings.MSG91_AUTH_KEY,
+        "Content-Type": "application/json"
+    }
+
+    response = requests.post(url, json=payload, headers=headers)
+    return response.json()

@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+import random
+from django.utils import timezone
+from datetime import timedelta
 
 
 # ---------------- Product ----------------
@@ -94,7 +97,26 @@ class Order(models.Model):
     delivery_otp = models.CharField(max_length=6, blank=True, null=True)
     otp_verified = models.BooleanField(default=False)
     otp_created_at = models.DateTimeField(blank=True, null=True)
+    def generate_delivery_otp(self):
+        import random
+        from django.utils import timezone
 
+        self.delivery_otp = str(random.randint(1000, 9999))
+        self.otp_created_at = timezone.now()
+        self.otp_verified = False
+        self.save()
+
+    def is_otp_valid(self, entered_otp):
+        from django.utils import timezone
+        from datetime import timedelta
+
+        if not self.delivery_otp:
+            return False
+
+        if timezone.now() > self.otp_created_at + timedelta(minutes=10):
+            return False
+
+        return self.delivery_otp == entered_otp
     def __str__(self):
         return f"Order {self.id}"
 
@@ -132,7 +154,7 @@ class Address(models.Model):
     full_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     address = models.TextField()
-    city = models.CharField(max_length=50)
+    city = models.CharField(max_length=100)
     state = models.CharField(max_length=50)
     pincode = models.CharField(max_length=10)
     landmark = models.CharField(max_length=100, blank=True)
@@ -174,7 +196,7 @@ class Address(models.Model):
     full_name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     address = models.TextField()
-    city = models.CharField(max_length=50)
+    city = models.CharField(max_length=500)
     state = models.CharField(max_length=50)
     pincode = models.CharField(max_length=10)
     landmark = models.CharField(max_length=100, blank=True)
@@ -187,7 +209,7 @@ class Address(models.Model):
     
 class DeliverablePincode(models.Model):
     pincode = models.CharField(max_length=6, unique=True)
-    city = models.CharField(max_length=50)
+    city = models.CharField(max_length=500)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):

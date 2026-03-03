@@ -19,8 +19,8 @@ RAZORPAY_KEY_ID = "rzp_test_S2sCju523Zos8Z"
 RAZORPAY_KEY_SECRET = "OcAOAmli0mcd6KiHHuv7PzUk"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-
-
+MSG91_AUTH_KEY = "your_auth_key_here"
+MSG91_TEMPLATE_ID = "698c693cd778d758d5379a55"
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "templates",
     "api.apps.ApiConfig",
-    
+
 ]
 
 MIDDLEWARE = [
@@ -69,9 +69,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "dsk_backend.wsgi.application"
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DSKDB',
+        'USER': 'postgres',        # or dskuser if you created one
+        'PASSWORD': 'Arjun@2003',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 

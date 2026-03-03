@@ -1,6 +1,7 @@
 from decimal import Decimal
 import json
 from pyexpat.errors import messages
+import openpyxl
 import razorpay
 import hmac
 import hashlib
@@ -30,6 +31,11 @@ from .utils import generate_delivery_otp, send_delivery_otp_email , generate_wha
 from django.shortcuts import redirect, get_object_or_404
 from urllib.parse import quote
 from django.contrib import messages
+from openpyxl import Workbook
+from datetime import datetime
+from django.db.models import Sum
+from django.utils import timezone
+from django.contrib.admin.views.decorators import staff_member_required
 
 
 razorpay_client = razorpay.Client(
@@ -86,7 +92,7 @@ def create_order(request):
                 address=data.get("address", ""),
                 phone=data.get("phone", ""),
                 subtotal=Decimal('0.00'),
-                delivery_charge=Decimal(str(data.get("delivery", 0))),
+                delivery_charge=Decimal('0.00'),  # temporary
                 total_amount=0,
             )
 
@@ -116,7 +122,15 @@ def create_order(request):
 
             # ---------------- Update totals ----------------
             order.subtotal = subtotal
-            order.total_amount = subtotal + order.delivery_charge
+            
+            if subtotal > 0 and subtotal < 1000:
+                delivery_charge = Decimal('50.00')
+            else:
+                 delivery_charge = Decimal('0.00')
+                 
+            order.delivery_charge = delivery_charge
+            order.total_amount = subtotal + delivery_charge    
+             
             order.save()
 
         return JsonResponse({
@@ -667,4 +681,71 @@ def delivery_agent_whatsapp(request, order_id):
     )
 
     return redirect(whatsapp_url)
- 
+
+@staff_member_required
+def admin_dashboard(request):
+
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+
+    orders = Order.objects.filter(payment_status="PAID")
+
+    if start_date and end_date:
+        orders = orders.filter(
+            created_at__date__range=[start_date, end_date]
+        )
+
+    total_orders = orders.count()
+    total_revenue = orders.aggregate(
+        Sum("total_amount")
+    )["total_amount__sum"] or 0
+
+    # 📊 Chart Data (Last 7 days)
+    last_7_days = []
+    revenue_data = []
+
+    for i in range(6, -1, -1):
+        day = timezone.now().date() - timezone.timedelta(days=i)
+        daily_total = Order.objects.filter(
+            payment_status="PAID",
+            created_at__date=day
+        ).aggregate(Sum("total_amount"))["total_amount__sum"] or 0
+
+        last_7_days.append(day.strftime("%d %b"))
+        revenue_data.append(float(daily_total))
+
+    context = {
+        "total_orders": total_orders,
+        "total_revenue": total_revenue,
+        "labels": last_7_days,
+        "data": revenue_data,
+    }
+
+    return render(request, "admin_dashboard.html", context) 
+
+@staff_member_required
+def export_sales_excel(request):
+
+    orders = Order.objects.filter(payment_status="PAID")
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Sales Report"
+
+    sheet.append(["Order ID", "Customer", "Total Amount", "Date"])
+
+    for order in orders:
+        sheet.append([
+            order.id,
+            order.customer.username if order.customer else "Guest",
+            float(order.total_amount),
+            order.created_at.strftime("%Y-%m-%d"),
+        ])
+
+    response = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    response["Content-Disposition"] = 'attachment; filename="sales_report.xlsx"'
+
+    workbook.save(response)
+    return response

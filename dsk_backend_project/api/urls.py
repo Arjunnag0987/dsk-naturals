@@ -44,6 +44,8 @@ urlpatterns = [
     path("address/delete/<int:address_id>/",views.delete_address,name="delete_address"),
     path("delivery/verify/<int:order_id>/",views.delivery_agent_verify_otp,name="delivery_verify"),
     path("delivery/whatsapp/<int:order_id>/",views.delivery_agent_whatsapp,name="delivery_whatsapp"),
+    
+    
 
 
 ]
