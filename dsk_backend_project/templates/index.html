@@ -77,7 +77,7 @@
   <header id="app-header" class="sticky top-0 left-0 right-0 bg-white shadow z-40 rounded-b-3xl">
     <div class="container mx-auto px-4 md:px-6 py-2 flex items-center justify-between">
       <div class="flex items-center space-x-4">
-        <img id="site-logo" src="http://127.0.0.1:8000/media/profiles/p8.png" alt="DSK" class="h-24 w-24 object-contain logo-img"/>
+        <img id="site-logo" src="https://res.cloudinary.com/drmgywvk0/image/upload/v1772951202/p8_dyviac.png" alt="DSK" class="h-24 w-24 object-contain logo-img"/>
         <div class="hidden md:block">
           <h1 class="text-base md:text-xl font-bold text-[var(--dsk-green)]">DSK Naturals</h1>
           <p class="text-xs text-gray-500">Where Purity meets Flavour</p>
@@ -269,70 +269,88 @@
     /* ------------------ DATA ------------------ */
      baseProducts = [
       { baseId: 1, category: 'Spices & Masalas', name: 'Turmeric Powder', /*stock:0, is_available: true,*/ description: "Pure, stone-ground turmeric made from premium roots. Rich in curcumin, natural aroma, and perfect for daily cooking.", images:[
-          'https://placehold.co/400x300/FFD966/000?text=Turmeric+1',
-          'https://placehold.co/400x300/FFD966/000?text=Turmeric+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961154/n1_iqwjxz.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961151/n2_kewhki.png'
         ], variants:[{id:'1-250g',size:'250g',price:125},{id:'1-500g',size:'500g',price:250}]},
       { baseId: 2, category: 'Spices & Masalas', name: 'Red Chilli Powder',description: "Red chilli powder is prepared using carefully selected dried red chillies that are cleaned, dried, and ground with attention to purity and flavour. No artificial colour or flavor added  ,Its role goes beyond heat, as it contributes to aroma, appearance, and balance in a wide range of recipes.", images:[
-          'https://placehold.co/400x300/FFD966/000?text=Red+Chilli+1',
-          'https://placehold.co/400x300/FFD966/000?text=Red+Chilli+2',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961065/a1_skqm8q.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961080/a2_eetfyb.png',
         ], variants:[{id:'2-100g',size:'250g',price:200},{id:'2-250g',size:'500g',price:400}]},
       { baseId: 3, category: 'Spices & Masalas', name: 'Coriander Powder',description: "Coriander Powder 100% Pure ,Rich Aroma Made from whole spices that contain natural oils, coriander gets its properties and taste from its naturally occuring volatile oils. With no added preservatives", images:[
-          'https://placehold.co/400x300/7BBF3E/000?text=Coriander+1',
-          'https://placehold.co/400x300/7BBF3E/000?text=Coriander+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963989/t1_pg3cw9.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963990/t2_kcwv3x.png'
         ], variants:[{id:'3-100g',size:'200g',price:125},{id:'3-250g',size:'500g',price:250}]},
       { baseId: 4, category: 'Whole Spices', name: 'Black Pepper',description: "Black Pepper Powder, Made from premium-grade black peppercorns, this spice is freshly ground to retain its natural aroma, sharpness, and essential oils. Each spoonful delivers a zesty, vibrant taste that enhances your dishes with authentic warmth and depth.free from artificial additives, preservatives, or chemicals", images:[
-          'https://placehold.co/400x300/FFD966/000?text=Black+Pepper+1',
-          'https://placehold.co/400x300/FFD966/000?text=Black+Pepper+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961154/m1_hhpxwf.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961148/m2_flmojn.png'
         ], variants:[{id:'4-100g',size:'100g',price:160},{id:'4-200g',size:'200g',price:300}]},
       { baseId: 5, category: 'Whole Spices', name: 'Cumin Seeds (Jeera Powder)',description: "Jeera powder 100% Pure Free from additives, preservatives, or synthetic chemicals,Rich, Earthy Flavor Enhances curries, stews, soups,marinades, and spice blends with a savory, slightly nutty taste Nutrient Rich Versatile & Essential Aromatic & Fresh", images:[
-          'https://placehold.co/400x300/C9A66B/000?text=Jeera powder+1',
-          'https://placehold.co/400x300/C9A66B/000?text=Jeera powder+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961152/o1_ryg6gv.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961153/o2_m9qxpo.png'
         ], variants:[{id:'5-100g',size:'250g',price:175},{id:'5-250g',size:'500g',price:350}]},
       { baseId: 6, category: 'Blended Masalas', name: 'Sambar Powder',description: "Sambar Powder:essential South Indian aromatic spice blend used to flavor sambar, a popular lentil and vegetable stew. It is a finely ground mixture of roasted lentils and spices that provides a rich, tangy, and slightly spicy depth to the dish.", images:[
-          'https://placehold.co/400x300/FFD966/000?text=Sambar+Powder+1',
-          'https://placehold.co/400x300/FFD966/000?text=Sambar+Powder+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961155/q1_vrtvlk.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961156/q2_ronxo5.png'
         ], variants:[{id:'6-100g',size:'100g',price:125},{id:'6-250g',size:'250g',price:250}]},
       { baseId: 7, category: 'Blended Masalas', name: 'Rasam Powder',description: "Rasam powder made in small batches using all-natural, preservative-free ingredients like chillies, black pepper, cumin, and hing. Inspired by traditional Udupi recipes, this spice blend creates a perfectly balanced rasam that’s both soothing and bold.", images:[
-          'https://placehold.co/400x300/FFD966/000?text=Rasam+Powder+1',
-          'https://placehold.co/400x300/FFD966/000?text=Rasam+Powder+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961157/r1_ee7w0m.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961159/r2_kbo4m8.png'
         ], variants:[{id:'7-100g',size:'100g',price:125},{id:'7-250g',size:'250g',price:250}]},
       { baseId: 8, category: 'Blended Masalas', name: 'Garam Masala',description: "Garam Masala, a robust blend crafted to bring the heart and soul of Punjab's rich culinary heritage straight to your plate. This aromatic spice mix, known for its bold, earthy, and warm notes, will infuse every dish with mouthwatering flavor and an irresistible aroma.", images:[
-          'https://placehold.co/400x300/FFD966/000?text=Garam+Masala+1',
-          'https://placehold.co/400x300/FFD966/000?text=Garam+Masala+2'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961126/j1_g3ifkg.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961132/j2_gitivz.png'
         ], variants:[{id:'8-50g',size:'100g',price:125},{id:'8-100g',size:'250g',price:250}]},
       { baseId: 17, category: 'Whole Spices', name: 'Cardamom (Elaichi)',description: "Cardamom  This versatile spice is perfect for both sweet and savory dishes, from curries and desserts to teas and beverages. sourced with care to preserve natural aroma, colour, and flavour.", images:[
-          'https://placehold.co/400x300/8FBC8F/000?text=Cardamom',
-          'https://placehold.co/400x300/8FBC8F/000?text=Cardamom'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961077/h1_z2zyxc.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961097/h2_wv16bg.png'
         ], variants:[{id:'17-50g',size:'100g',price:390}]},
       { baseId: 18, category: 'Spices & Masalas', name: 'Cloves (Lavang)',description: "Cloves Premium Cloves bring a warm, aromatic flavor to both sweet and savory dishes. Ideal for curries, stews, rice, and baked goods. Rich in essential oils and antioxidants, they provide digestive support and anti-inflammatory benefits. Carefully selected for superior aroma and purity.", images:[
-          'https://placehold.co/400x300/8B0000/fff?text=Cloves',
-          'https://placehold.co/400x300/8B0000/fff?text=Cloves'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961096/i1_kwxfil.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961114/i2_tag9xr.png'
         ], variants:[{id:'18-25g',size:'100g',price:160}]},
       { baseId: 9, category: 'Spices & Masalas', name: 'Cinnamon stick - srilanka (Dalchini)',description: "Cinnamon Stick:The warm, aromatic flavor of our premium Cinnamon is a true culinary essential. Sourced from the highest quality organic cinnamon, perfect for a range of recipes. Also known as dalchini, this versatile spice adds a delightful sweetness and depth to both sweet and savory dishes", images:[
-          'https://placehold.co/400x300/D2691E/fff?text=Cinnamon',
-          'https://placehold.co/400x300/D2691E/fff?text=Cinnamon'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961121/g1_jiuoao.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961071/g2_pwbedi.pnghttps://placehold.co/400x300/D2691E/fff?text=Cinnamon'
         ], variants:[{id:'9-25g',size:'100g',price:100},{id:'9-50g',size:'250g',price:200}]},
       { baseId: 10, category: 'Whole Spices', name: 'Bay Leaves (Tej Patta)',description: "Bay leaf: Bay leaf is a cornerstone in many traditional spice cabinets, prized not for a bold punch of flavour but for its capacity to tie other spices together,selected and dried carefully to preserve their essential aroma and ensure dependable performance in everyday cooking", images:[
-          'https://placehold.co/400x300/556B2F/fff?text=Bay+Leaves'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963993/w1_s18wjo.png'
         ], variants:[{id:'10-10g',size:'10g',price:20},{id:'10-25g',size:'25g',price:45}]},
       { baseId: 11, category: 'Whole Spices', name: 'Mace (Javitri)', description: "Mace: An aromatic golden brown spice obtained from the dried aril (net-like sheath) which covers the Nutmeg seed, Myristica  fragrans  Houtt. Mace is yellowish-tan to reddish-tan in color, made up of flat, hornlike, shiny branched pieces with a fragrant, nutmeg like aromatic odor and warm taste", images:[
-          'https://placehold.co/400x300/FFA07A/000?text=Mace'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772964698/x1_fcrrli.png'
         ], variants:[{id:'11-10g',size:'10g',price:260},{id:'11-25g',size:'25g',price:480}]},
       { baseId: 12, category: 'Herbs & Natural', name: 'Kashmiri Red Chillies', description: "Kashmiri  Red chilli Powder is 100% pure and natural. Absolutely no artificial colours or flavour is added to it. Pure and handpicked Kashmiri mirchi is dried and stone-grounded to powder. Packed hygienically with multiple safety norms.", images:[
-          'https://placehold.co/400x300/FF4500/fff?text=Kashmiri+Chilli'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961162/s1_nqwebi.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961161/s2_hiv9sw.png'
         ], variants:[{id:'12-50g',size:'250g',price:250}]},
       { baseId: 13, category: 'Blended Masalas', name: 'Biryani Masala', description: "Biryani Masala :Experience the rich legacy of Indian cuisine with Premium Spices Crafted in small batches using age-old techniques and handpicked ingredients, our blends offer pure, authentic flavors with no added preservatives, colors, or fillers,versatile for both vegetarian and non-vegetarian dishes.", images:[
-          'https://placehold.co/400x300/DB7093/000?text=Biryani+Masala'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961075/c1_gtgmhl.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961093/c2_dbtkfs.png'
         ], variants:[{id:'13-100g',size:'100g',price:125},{id:'13-250g',size:'250g',price:250}]},
       { baseId: 14, category: 'Blended Masalas', name: 'Pav Bhaji Masala', description: "Pav Bhaji: Elevate your homemade pav bhaji to Mumbai street food perfection with our authentic Mumbai Pav Bhaji Masala. Crafted with a blend of premium spices, our masala unlocks the true essence of this iconic recipe. Bring the bustling flavors of Mumbai into your kitchen and delight your taste buds with every bite.", images:[
-          'https://placehold.co/400x300/FFA500/000?text=Pav+Bhaji'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961136/k1_mhtuux.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961139/k2_hw148q.png'
         ], variants:[{id:'14-100g',size:'100g',price:125},{id:'14-250g',size:'250g',price:250}]},
       { baseId: 15, category: 'Spices & Masalas', name: 'White Sesame Seeds', description: "White Sesame Seeds: Nutrient-rich seeds prized for their delicate, nutty flavor and subtle crunch. Organically grown and free from synthetic pesticides, these seeds are a wholesome addition to a variety of dishes, enhancing both taste and nutrition.", images:[
-          'https://placehold.co/400x300/F5DEB3/000?text=White+Sesame'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963990/u1_bzeis7.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963991/u2_utjr2h.png'
         ], variants:[{id:'15-100g',size:'100g',price:60},{id:'15-250g',size:'250g',price:140}]},
       { baseId: 16, category: 'Spices & Masalas', name: 'Black Sesame Seeds', description: "Black sesame seeds are sourced and handled with care to preserve their natural colour, aroma, and texture.Rich in Nutrients: Packed with calcium, iron, magnesium, and healthy fats.Flavorful & Versatile,Supports Bone & Digestive Health,Natural & Unprocessed:",   images:[
-          'https://placehold.co/400x300/000000/fff?text=Black+Sesame'
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963992/v1_qtfcnu.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772963991/v2_rrm8vm.png'
         ], variants:[{id:'16-100g',size:'100g',price:70},{id:'16-250g',size:'250g',price:160}]},
+      { baseId: 19, category: 'Spices & Masalas', name: 'Bisi Bele Bath masala', description: "Bisi Bele Bath Masala is a traditional Karnataka spice blend made from carefully selected spices and roasted to perfection. It adds authentic aroma, rich flavour, and the perfect balance of taste to Bisi Bele Bath and other rice dishes. Free from artificial colours and preservatives.",   images:[
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961137/e1_caual2.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961104/e2_mkcr0f.png'
+        ], variants:[{id:'19-100g',size:'100g',price:125},{id:'19-250g',size:'250g',price:250}]},
+      { baseId: 20, category: 'Spices & Masalas', name: 'Puliyogare powder', description: "Puliyogare Masala is a traditional South Indian spice blend made from carefully selected spices and roasted ingredients. It adds authentic aroma, tangy flavour, and perfect taste to tamarind rice",   images:[
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961054/b1_y7gwuq.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961073/b2_scbsui.png'
+        ], variants:[{id:'20-100g',size:'100g',price:125},{id:'20-250g',size:'250g',price:250}]},    
+      { baseId: 21, category: 'Spices & Masalas', name: 'Chutney Powder', description: "Chutney Powder is a versatile blend of spices and herbs, perfect for making fresh and flavorful chutneys. It adds a burst of taste to any dish.",   images:[
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961099/d1_idwvjo.png',
+          'https://res.cloudinary.com/drmgywvk0/image/upload/v1772961099/d2_mkqr3f.png'
+        ], variants:[{id:'21-250g',size:'250g',price:200},{id:'21-500g',size:'500g',price:400}]},
+
       
     ];
 
@@ -342,9 +360,9 @@
     
 
     const bannerImages = [
-  { src: "http://127.0.0.1:8000/media/profiles/p5.png", alt: 'Mega Masala Sale Banner' },
-  { src: "http://127.0.0.1:8000/media/profiles/p6.png", alt: 'Authentic Masalas — Traditional Taste' },
-  { src: "http://127.0.0.1:8000/media/profiles/p7.png", alt: 'Premium Quality Ingredients for Your Kitchen' }
+  { src: "https://res.cloudinary.com/drmgywvk0/image/upload/v1772948723/p5_b9kbra.png", alt: 'Mega Masala Sale Banner' },
+  { src: "https://res.cloudinary.com/drmgywvk0/image/upload/v1772952280/p6_uxiuxe.png", alt: 'Authentic Masalas — Traditional Taste' },
+  { src: "https://res.cloudinary.com/drmgywvk0/image/upload/v1772952256/p7_ew4mf7.png", alt: 'Premium Quality Ingredients for Your Kitchen' }
   
 ];
 
@@ -922,11 +940,14 @@ function renderProducts() {
         console.log('ORDER_PAYLOAD', order);
 
         try{
-            const res = await fetch(ORDER_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(order),
-        });
+            const res = await fetch("/api/verify-payment/", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken")
+              },
+              body: JSON.stringify(response)
+            });
 
         if (!res.ok) {
           const err = await res.json();
@@ -963,7 +984,9 @@ async function openRazorpayPayment(orderId, amount, name, email, phone) {
 
   const res = await fetch("/api/create-razorpay-order/", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookies("csrftoken") },
     body: JSON.stringify({ order_id: orderId })
   });
 
@@ -997,9 +1020,12 @@ async function openRazorpayPayment(orderId, amount, name, email, phone) {
 
 async function verifyRazorpayPayment(response) {
 
-  const res = await fetch("/api/verify-payment/", {
+  const res = await fetch("/api/orders/create/", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken")
+   },
     body: JSON.stringify(response)
   });
 
@@ -1335,16 +1361,23 @@ async function loadProductsFromBackend() {
 </script>
 
 {% if messages %}
-{% for message in messages %}
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    
-    showPopup("{{ message|escapejs }}", "{{ message.tags }}");
-    
+
+  const djangoMessages = [
+    {% for message in messages %}
+    {
+      text: "{{ message|escapejs }}",
+      type: "{{ message.tags|default:'info' }}"
+    },
+    {% endfor %}
+  ];
+
+  djangoMessages.forEach(function(msg){
+    showPopup(msg.text, msg.type);
+  });
+
 });
-</script>
-{% endfor %}
-{% endif %}
 
   function showPopup(text, type) {
     // Remove existing popup if any

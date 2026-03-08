@@ -7,7 +7,11 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key")
 DEBUG = os.environ.get("DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost,68.178.170.144").split(",")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost,68.178.170.144,dsknaturals.com,www.dsknaturals.com").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    "https://dsknaturals.com",
+    "https://www.dsknaturals.com"
+]
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.zoho.com'
 EMAIL_PORT = 587

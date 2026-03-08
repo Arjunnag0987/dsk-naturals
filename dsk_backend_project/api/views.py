@@ -294,6 +294,10 @@ def order_invoice(request, order_id):
 
     return response
 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 @csrf_exempt
 def create_razorpay_order(request):
     print("🔥 HIT create_razorpay_order")
@@ -306,14 +310,15 @@ def create_razorpay_order(request):
         print("🔥 REQUEST BODY:", data)
 
         order_id = data.get("order_id")
+
         if not order_id:
             return JsonResponse({"error": "order_id missing"}, status=400)
 
         order = Order.objects.get(id=order_id)
         print("🔥 ORDER FOUND:", order.id)
 
-        amount = int(float(order.total_amount) * 100)
-        print("🔥 AMOUNT:", amount)
+        # 🔥 IMPORTANT
+        amount = int(order.total * 100)
 
         razorpay_order = razorpay_client.order.create({
             "amount": amount,
@@ -326,17 +331,17 @@ def create_razorpay_order(request):
         order.razorpay_order_id = razorpay_order["id"]
         order.save()
 
-        response = {
+        return JsonResponse({
             "key": settings.RAZORPAY_KEY_ID,
             "amount": amount,
             "razorpay_order_id": razorpay_order["id"]
-        }
+        })
 
-        print("🔥 RESPONSE:", response)
-        return JsonResponse(response)
+    except Order.DoesNotExist:
+        return JsonResponse({"error": "Order not found"}, status=404)
 
     except Exception as e:
-        print("🔥 BACKEND ERROR:", repr(e))
+        print("🔥 BACKEND ERROR:", e)
         return JsonResponse({"error": str(e)}, status=500)
 
 @csrf_exempt
