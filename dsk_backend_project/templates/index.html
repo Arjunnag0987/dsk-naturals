@@ -986,7 +986,7 @@ async function openRazorpayPayment(orderId, amount, name, email, phone) {
     method: "POST",
     headers: { 
       "Content-Type": "application/json",
-      "X-CSRFToken": getCookies("csrftoken") },
+      "X-CSRFToken": getCookie("csrftoken") },
     body: JSON.stringify({ order_id: orderId })
   });
 
