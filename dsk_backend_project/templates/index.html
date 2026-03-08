@@ -77,7 +77,7 @@
   <header id="app-header" class="sticky top-0 left-0 right-0 bg-white shadow z-40 rounded-b-3xl">
     <div class="container mx-auto px-4 md:px-6 py-2 flex items-center justify-between">
       <div class="flex items-center space-x-4">
-        <img id="site-logo" src="https://res.cloudinary.com/drmgywvk0/image/upload/v1772951202/p8_dyviac.png" alt="DSK" class="h-24 w-24 object-contain logo-img"/>
+        <img id="site-logo" src="http://127.0.0.1:8000/media/profiles/p8.png" alt="DSK" class="h-24 w-24 object-contain logo-img"/>
         <div class="hidden md:block">
           <h1 class="text-base md:text-xl font-bold text-[var(--dsk-green)]">DSK Naturals</h1>
           <p class="text-xs text-gray-500">Where Purity meets Flavour</p>
@@ -940,14 +940,11 @@ function renderProducts() {
         console.log('ORDER_PAYLOAD', order);
 
         try{
-            const res = await fetch("/api/verify-payment/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken")
-              },
-              body: JSON.stringify(response)
-            });
+            const res = await fetch(ORDER_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(order),
+        });
 
         if (!res.ok) {
           const err = await res.json();
@@ -984,9 +981,7 @@ async function openRazorpayPayment(orderId, amount, name, email, phone) {
 
   const res = await fetch("/api/create-razorpay-order/", {
     method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCookie("csrftoken") },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ order_id: orderId })
   });
 
@@ -1020,12 +1015,9 @@ async function openRazorpayPayment(orderId, amount, name, email, phone) {
 
 async function verifyRazorpayPayment(response) {
 
-  const res = await fetch("/api/orders/create/", {
+  const res = await fetch("/api/verify-payment/", {
     method: "POST",
-    headers: { 
-      "Content-Type": "application/json",
-      "X-CSRFToken": getCookie("csrftoken")
-   },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(response)
   });
 
@@ -1358,26 +1350,17 @@ async function loadProductsFromBackend() {
 
   });
 
-</script>
 
-{% if messages %}
+
+  </script>
+
+  {% if messages %}
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const djangoMessages = [
+  document.addEventListener("DOMContentLoaded", function () {
     {% for message in messages %}
-    {
-      text: "{{ message|escapejs }}",
-      type: "{{ message.tags|default:'info' }}"
-    },
+      showPopup("{{ message|escapejs }}", "{{ message.tags }}");
     {% endfor %}
-  ];
-
-  djangoMessages.forEach(function(msg){
-    showPopup(msg.text, msg.type);
   });
-
-});
 
   function showPopup(text, type) {
     // Remove existing popup if any
