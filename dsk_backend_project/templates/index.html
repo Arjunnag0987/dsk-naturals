@@ -80,7 +80,8 @@
         <img id="site-logo" src="http://127.0.0.1:8000/media/profiles/p8.png" alt="DSK" class="h-24 w-24 object-contain logo-img"/>
         <div class="hidden md:block">
           <h1 class="text-base md:text-xl font-bold text-[var(--dsk-green)]">DSK Naturals</h1>
-          <p class="text-xs text-gray-500">Where Purity meets Flavour</p>
+          <h1>TEST TEMPLATE WORKING</h1>
+          <p class="text-xs text-gray-500">Where Purity meets Flavour.....</p>
         </div>
       </div>
 
@@ -903,12 +904,15 @@ function renderProducts() {
       });
 
       // submit handler (posts to backend)
-      document.getElementById('checkout-form').addEventListener('submit', async (ev)=>{
+      document.getElementById('checkout-form').addEventListener('submit', async (ev) => {
+
         ev.preventDefault();
+
         const submitBtn = document.getElementById('order-submit');
         submitBtn.disabled = true;
+
         const originalText = submitBtn.innerText;
-        submitBtn.innerText = 'Placing...';
+        submitBtn.innerText = "Placing...";
 
         const name = document.getElementById('order-name').value.trim();
         const phone = document.getElementById('order-phone').value.trim();
@@ -922,11 +926,18 @@ function renderProducts() {
           submitBtn.innerText = originalText;
           return;
         }
-        const lat = document.getElementById('order-lat').value || null; const lon = document.getElementById('order-lon').value || null;
-        if(!name || !phone || !email || !address){ alert('Please fill all required fields.'); submitBtn.disabled=false; submitBtn.innerText = originalText; return; }
+
+        const lat = document.getElementById('order-lat').value || null;
+        const lon = document.getElementById('order-lon').value || null;
+
+        if (!name || !phone || !email || !address) {
+          alert("Please fill all required fields.");
+          submitBtn.disabled = false;
+          submitBtn.innerText = originalText;
+          return;
+        }
 
         const order = {
-          // ✅ TOP LEVEL (backend expects these)
           address,
           phone,
           pincode,
@@ -934,60 +945,75 @@ function renderProducts() {
           delivery,
           total: grand,
 
-          // ✅ guest details (optional identity info)
           guest: {
             name: name,
-            phone: phone,        // ✅ REQUIRED BY BACKEND
+            phone: phone,
             email: email,
-            address: address,    // ✅ REQUIRED BY BACKEND
+            address: address,
             lat: lat,
             lon: lon
           },
-          // ✅ order items
+
           items: state.cartItems.map(i => ({
-          product_id: i.product_id,
-          qty: i.quantity,
-          price: i.price
-            }))
-          };
+            product_id: i.product_id,
+            qty: i.quantity,
+            price: i.price
+          }))
+        };
 
-        // show payload in console for debugging
-        console.log('ORDER_PAYLOAD', order);
+        console.log("ORDER_PAYLOAD", order);
 
-        try{
-            const res = await fetch(ORDER_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(order),
-        });
+        try {
 
-        if (!res.ok) {
-          const err = await res.json();
+          const res = await fetch(ORDER_ENDPOINT, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCookie("csrftoken")
+            },
+            body: JSON.stringify(order)
+          });
+
+          let data;
+
+          try {
+            data = await res.json();
+          } catch (e) {
+            console.error("Invalid JSON response from server");
+            throw new Error("Server returned invalid response");
+          }
+
+          if (!res.ok) {
+
+            await openCenterModal({
+              title: "Delivery Unavailable",
+              text: data.error || "Delivery not available for this pincode"
+            });
+
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+            return;
+          }
+
+          console.log("ORDER CREATED:", data);
+
+          // Start Razorpay payment
+          openRazorpayPayment(data.order_id, grand, name, email, phone);
+
+        } catch (err) {
+
+          console.error("Order submit failed:", err);
+
           await openCenterModal({
-            title: "Delivery Unavailable",
-            text: err.error || "Delivery not available for this pincode"
+            title: "Server Error",
+            text: "Something went wrong while placing the order. Please try again."
           });
 
           submitBtn.disabled = false;
           submitBtn.innerText = originalText;
-          return;
+
         }
 
-        const data = await res.json();
-        // backend MUST return order_id
-        // example: { order_id: 12 }
-        openRazorpayPayment(data.order_id, grand, name, email, phone);
-        return;
-
-        }catch(err){
-          console.error('Order submit failed', err);
-          // Friendly fallback: store order locally and show success-like message
-          try { localStorage.setItem('dsk_last_failed_order', JSON.stringify(order)); } catch(e){ console.warn('Could not save failed order to localStorage', e); }
-          showMessage('Order saved locally — we will retry. Contact support if needed.');
-          overlay.remove();
-          state.cartItems = [];
-          renderCart();
-        }
       });
     }
     /* ================== RAZORPAY PAYMENT ================== */

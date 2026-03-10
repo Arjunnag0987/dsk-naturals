@@ -1,6 +1,5 @@
 from decimal import Decimal
 import json
-from pyexpat.errors import messages
 import openpyxl
 import razorpay
 import hmac
@@ -49,6 +48,7 @@ def create_order(request):
     try:
         data = json.loads(request.body)
         print("🔥 ORDER DATA:", data)
+        print("🔥 ITEMS RECEIVED:", data.get("items"))
 
         # ✅ 1. PINCODE CHECK (ADD THIS)
         pincode = data.get("pincode")
@@ -100,24 +100,29 @@ def create_order(request):
 
             # ---------------- Order items ----------------
             for item in data.get("items", []):
-                product = Product.objects.select_for_update().get(
-                    id=item["product_id"]
-                )
 
-                if product.stock < item["qty"]:
+                product_id = item.get("product_id") or item.get("id")
+                qty = int(item.get("qty", 0))
+
+                if not product_id or not qty:
+                    raise Exception(f"Invalid cart item data: {item}")
+
+                product = Product.objects.select_for_update().get(id=product_id)
+
+                if product.stock < qty:
                     raise Exception(f"{product.name} is out of stock")
 
-                line_total = product.price * item["qty"]
+                line_total = product.price * Decimal(str(qty))
                 subtotal += line_total
 
                 OrderItem.objects.create(
                     order=order,
                     product=product,
-                    quantity=item["qty"],
+                    quantity=qty,
                     price=product.price,
                 )
 
-                product.stock -= item["qty"]
+                product.stock -= qty
                 product.save()
 
             # ---------------- Update totals ----------------
@@ -294,10 +299,6 @@ def order_invoice(request, order_id):
 
     return response
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-
 @csrf_exempt
 def create_razorpay_order(request):
     print("🔥 HIT create_razorpay_order")
@@ -318,7 +319,7 @@ def create_razorpay_order(request):
         print("🔥 ORDER FOUND:", order.id)
 
         # 🔥 IMPORTANT
-        amount = int(order.total * 100)
+        amount = int(float(order.total_amount * 100))
 
         razorpay_order = razorpay_client.order.create({
             "amount": amount,
