@@ -264,7 +264,7 @@
   <script>
     lucide.createIcons();
 
-
+    const USER_LOGGED_IN = "{{ request.user.is_authenticated }}" === "True";
 
     /* ------------------ DATA ------------------ */
      baseProducts = [
@@ -757,6 +757,18 @@ function renderProducts() {
 
     /* ------------------ SIMPLE CHECKOUT FLOW (NO RAZORPAY) ------------------ */
     function startCheckout(){
+
+      // 🔐 Check if user logged in
+      if (!USER_LOGGED_IN) {
+        openCenterModal({
+          title: "Login Required",
+          text: "Please login to continue checkout."
+        }).then(() => {
+          window.location.href = "/login/";
+        });
+        return;
+      }
+      
       if(state.cartItems.length === 0){ showMessage('Your cart is empty.'); return; }
 
       // Endpoint - change to your real endpoint
@@ -855,6 +867,9 @@ function renderProducts() {
 
       document.body.appendChild(overlay);
       lucide.createIcons();
+
+      // Check login status from Django
+      const USER_LOGGED_IN = "{{ request.user.is_authenticated }}" === "True";
 
       // fill order items and total
       const orderItemsEl = document.getElementById('order-items');
